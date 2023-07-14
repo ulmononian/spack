@@ -16,6 +16,8 @@ class UfsHurricaneAppEnv(BundlePackage):
 
     version("1.0.0")
 
+    depends_on("base-env", type="run")
+    depends_on("ufs-pyenv", type="run", when="+python")
     depends_on("jasper")
     depends_on("zlib")
     depends_on("libpng")
