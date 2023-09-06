@@ -259,9 +259,14 @@ def setup_meta_modules():
     module_choice = module_config["default"]["enable"][0]
     logging.info("  ... configured to use {} modules".format(module_choice))
 
-    # Prevent the use of tcl modules on macOS because sed syntax is different
-    if module_choice == "tcl" and sys.platform == "darwin":
-        raise Exception("Use of tcl modules on macOS not supported - sed syntax differs")
+    # Need to set a few variables when tcl modules are used
+    if module_choice == "tcl":
+        module_replace_patterns = ["is-loaded", "module load", "depends-on"]
+        # sed syntax differs on macOS
+        if sys.platform == "darwin":
+            sed_syntax_fix = "''"
+        else:
+            sed_syntax_fix = ""
 
     # Top-level module directory
     module_dir = substitute_config_vars(module_config["default"]["roots"][module_choice])
@@ -427,18 +432,13 @@ def setup_meta_modules():
                         logging.debug(
                             "  ... ... ... removing compiler prefices in {}".format(filepath)
                         )
-                        cmd = "sed -i 's#is-loaded {}/{}/#is-loaded #g' {}".format(
-                            compiler_name, compiler_version, filepath
-                        )
-                        status = os.system(cmd)
-                        if not status == 0:
-                            raise Exception("Error while calling '{}'".format(cmd))
-                        cmd = "sed -i 's#load {}/{}/#load #g' {}".format(
-                            compiler_name, compiler_version, filepath
-                        )
-                        status = os.system(cmd)
-                        if not status == 0:
-                            raise Exception("Error while calling '{}'".format(cmd))
+                        for pattern in module_replace_patterns:
+                            cmd = "sed -i {4} 's#{0} {1}/{2}/#{0} #g' {3}".format(
+                                pattern, compiler_name, compiler_version, filepath, sed_syntax_fix
+                            )
+                            status = os.system(cmd)
+                            if not status == 0:
+                                raise Exception("Error while calling '{}'".format(cmd))
 
             # Read compiler template into module_content string
             with open(COMPILER_TEMPLATES[module_choice]) as f:
@@ -651,40 +651,34 @@ def setup_meta_modules():
                                         filepath
                                     )
                                 )
+                                # Search patterns
+                                patterns = ["is-loaded", "module load", "depends-on"]
                                 # First, compiler-only dependent modules
-                                cmd = "sed -i 's#is-loaded {}/{}/#is-loaded #g' {}".format(
-                                    compiler_name, compiler_version, filepath
-                                )
-                                status = os.system(cmd)
-                                if not status == 0:
-                                    raise Exception("Error while calling '{}'".format(cmd))
-                                cmd = "sed -i 's#load {}/{}/#load #g' {}".format(
-                                    compiler_name, compiler_version, filepath
-                                )
-                                status = os.system(cmd)
-                                if not status == 0:
-                                    raise Exception("Error while calling '{}'".format(cmd))
+                                for pattern in module_replace_patterns:
+                                    cmd = "sed -i {4} 's#{0} {1}/{2}/#{0} #g' {3}".format(
+                                        pattern,
+                                        compiler_name,
+                                        compiler_version,
+                                        filepath,
+                                        sed_syntax_fix,
+                                    )
+                                    status = os.system(cmd)
+                                    if not status == 0:
+                                        raise Exception("Error while calling '{}'".format(cmd))
                                 # Then, compiler+mpi-dependent modules
-                                cmd = "sed -i 's#is-loaded {}/{}/{}/{}/#is-loaded #g' {}".format(
-                                    mpi_name,
-                                    mpi_version,
-                                    compiler_name,
-                                    compiler_version,
-                                    filepath,
-                                )
-                                status = os.system(cmd)
-                                if not status == 0:
-                                    raise Exception("Error while calling '{}'".format(cmd))
-                                cmd = "sed -i 's#load {}/{}/{}/{}/#load #g' {}".format(
-                                    mpi_name,
-                                    mpi_version,
-                                    compiler_name,
-                                    compiler_version,
-                                    filepath,
-                                )
-                                status = os.system(cmd)
-                                if not status == 0:
-                                    raise Exception("Error while calling '{}'".format(cmd))
+                                for pattern in module_replace_patterns:
+                                    cmd = "sed -i {6} 's#{0} {1}/{2}/{3}/{4}/#{0} #g' {5}".format(
+                                        pattern,
+                                        mpi_name,
+                                        mpi_version,
+                                        compiler_name,
+                                        compiler_version,
+                                        filepath,
+                                        sed_syntax_fix,
+                                    )
+                                    status = os.system(cmd)
+                                    if not status == 0:
+                                        raise Exception("Error while calling '{}'".format(cmd))
 
                     # Read compiler lua template into module_content string
                     with open(MPI_TEMPLATES[module_choice]) as f:
