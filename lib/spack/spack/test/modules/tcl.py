@@ -38,7 +38,14 @@ class TestTcl:
         content = modulefile_content(mpileaks_spec_string)
 
         assert (
-            len([x for x in content if "if {![info exists ::env(LMOD_VERSION_MAJOR)]} {" in x])
+            len(
+                [
+                    x
+                    for x in content
+                    if "if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {"  # noqa: E501
+                    in x
+                ]
+            )
             == 1
         )
         assert len([x for x in content if "depends-on " in x]) == 2
@@ -52,7 +59,14 @@ class TestTcl:
         content = modulefile_content("dtbuild1")
 
         assert (
-            len([x for x in content if "if {![info exists ::env(LMOD_VERSION_MAJOR)]} {" in x])
+            len(
+                [
+                    x
+                    for x in content
+                    if "if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {"  # noqa: E501
+                    in x
+                ]
+            )
             == 1
         )
         assert len([x for x in content if "depends-on " in x]) == 2
@@ -69,7 +83,14 @@ class TestTcl:
         content = modulefile_content(mpileaks_spec_string)
 
         assert (
-            len([x for x in content if "if {![info exists ::env(LMOD_VERSION_MAJOR)]} {" in x])
+            len(
+                [
+                    x
+                    for x in content
+                    if "if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {"  # noqa: E501
+                    in x
+                ]
+            )
             == 1
         )
         assert len([x for x in content if "depends-on " in x]) == 5
@@ -83,7 +104,14 @@ class TestTcl:
         content = modulefile_content("dtbuild1")
 
         assert (
-            len([x for x in content if "if {![info exists ::env(LMOD_VERSION_MAJOR)]} {" in x])
+            len(
+                [
+                    x
+                    for x in content
+                    if "if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {"  # noqa: E501
+                    in x
+                ]
+            )
             == 1
         )
         assert len([x for x in content if "depends-on " in x]) == 2
@@ -476,7 +504,14 @@ class TestTcl:
         # Test the mpileaks that should NOT have the autoloaded dependencies
         content = modulefile_content("mpileaks ^mpich")
         assert (
-            len([x for x in content if "if {![info exists ::env(LMOD_VERSION_MAJOR)]} {" in x])
+            len(
+                [
+                    x
+                    for x in content
+                    if "if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {"  # noqa: E501
+                    in x
+                ]
+            )
             == 0
         )
         assert len([x for x in content if "depends-on " in x]) == 0
