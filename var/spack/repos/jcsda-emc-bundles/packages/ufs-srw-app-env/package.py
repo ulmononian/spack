@@ -46,5 +46,6 @@ class UfsSrwAppEnv(BundlePackage):
     depends_on("gsi-ncdiag")
     depends_on("met")
     depends_on("metplus")
+    depends_on("mapl")
 
     # There is no need for install() since there is no code.
