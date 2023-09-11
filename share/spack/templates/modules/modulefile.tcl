@@ -27,7 +27,7 @@ proc ModulesHelp { } {
 
 {% block autoloads %}
 {% if autoload|length > 0 %}
-if {![info exists ::env(LMOD_VERSION_MAJOR)] && ![info exists ::env(LMOD_VERSION)]} {
+if {![info exists ::env(LMOD_VERSION_MAJOR)]} {
 {% for module in autoload %}
     module load {{ module }}
 {% endfor %}
