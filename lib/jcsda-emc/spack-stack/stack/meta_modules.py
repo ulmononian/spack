@@ -750,10 +750,21 @@ Python, list the correct version in the package config"""
                     python_dict = get_matched_dict(compiler_install_dir, python_candidate_list)
             logging.info(" ... stack python providers: '{}'".format(python_dict))
             if not python_dict:
-                raise Exception(
-                    """No matching Python version found. Make sure that the
-Python version in the package config matches what spack installed."""
+                user_input = input(
+                    "No matching Python version found found, proceed without creating Python modules? (yes/no): "
                 )
+                if not user_input.lower() in ["yes", "y"]:
+                    raise Exception(
+                        """"No matching Python version found. Make sure that the
+Python version in the package config matches what spack installed."""
+                    )
+                else:
+                    logging.info(
+                        "Metamodule generation completed successfully in {}".format(
+                            meta_module_dir
+                        )
+                    )
+                    return
 
     for compiler_name in compiler_dict.keys():
         for compiler_version in compiler_dict[compiler_name]:
