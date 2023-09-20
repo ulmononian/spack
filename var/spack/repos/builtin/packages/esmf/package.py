@@ -222,6 +222,11 @@ class Esmf(MakefilePackage):
         elif self.compiler.name == "intel" or self.compiler.name == "oneapi":
             env.set("ESMF_COMPILER", "intel")
         elif self.compiler.name in ["clang", "apple-clang"]:
+            # Turn off OpenMP with both versions of clang compilers
+            # to avoid having to add clang OpenMP libraries to the
+            # Fortran linker command.
+            env.set("ESMF_OPENMP", "OFF")
+            #
             env.set("ESMF_COMPILER", "gfortranclang")
             with self.compiler.compiler_environment():
                 gfortran_major_version = int(
