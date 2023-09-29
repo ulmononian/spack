@@ -32,7 +32,7 @@ class Bufr(CMakePackage):
     # tar file name depends on version
     def url_for_version(self, version):
         url = "https://github.com/NOAA-EMC/NCEPLIBS-bufr/archive/refs/tags"
-        if (version >= Version("12.0.1")):
+        if version >= Version("12.0.1"):
             url += "/v{0}.tar.gz".format(version)
         else:
             url += "/bufr_v{0}.tar.gz".format(version)
