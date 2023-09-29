@@ -106,6 +106,13 @@ def setup_common_parser_args(subparser):
         help="Include upstream environment (/path/to/spack-stack-x.y.z/envs/unified-env/install)",
     )
 
+    subparser.add_argument(
+        "--modulesys",
+        type=str,
+        choices=["lmod", "tcl"],
+        help="Override choice of tcl vs. lmod config (default is based on site config)",
+    )
+
 
 def setup_ctr_parser(subparser):
     """create container-specific parsing options"""
@@ -168,6 +175,7 @@ def dict_from_args(args):
     dict["base_packages"] = args.packages
     dict["dir"] = args.dir
     dict["upstreams"] = args.upstream
+    dict["modulesys"] = args.modulesys
 
     return dict
 

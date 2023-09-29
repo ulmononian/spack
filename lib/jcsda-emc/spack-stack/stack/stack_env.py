@@ -96,6 +96,7 @@ class StackEnv(object):
         self.install_prefix = kwargs.get("install_prefix", None)
         self.mirror = kwargs.get("mirror", None)
         self.upstreams = kwargs.get("upstreams", None)
+        self.modulesys = kwargs.get("modulesys", None)
 
         if not self.name:
             # site = self.site if self.site else 'default'
@@ -108,11 +109,29 @@ class StackEnv(object):
     def add_includes(self, includes):
         self.includes.extend(includes)
 
+    def get_lmod_or_tcl(self, site_configs_dir):
+        site_modules_yaml_path = os.path.join(site_configs_dir, "modules.yaml")
+        with open(site_modules_yaml_path, "r") as f:
+            site_modules_yaml = syaml.load_config(f)
+        lmod_or_tcl_list = site_modules_yaml["modules"]["default"]["enable"]
+        if len(set(lmod_or_tcl_list)) > 1:
+            logging.warning("WARNING: Multiple lmod/tcl settings found for %s; using the first" % site_modules_yaml_path)
+        lmod_or_tcl = lmod_or_tcl_list[0]
+        assert lmod_or_tcl in ("lmod", "tcl"), "lmod/tcl setting could not be determined for %s" % site_modules_yaml_path
+        return lmod_or_tcl
+
     def _copy_common_includes(self):
         """Copy common directory into environment"""
         self.includes.append("common")
         env_common_dir = os.path.join(self.env_dir(), "common")
-        shutil.copytree(common_path, env_common_dir)
+        shutil.copytree(common_path, env_common_dir, ignore=shutil.ignore_patterns("modules_*.yaml"))
+        if not self.modulesys:
+            lmod_or_tcl = self.get_lmod_or_tcl(self.site_configs_dir())
+        else:
+            lmod_or_tcl = self.modulesys
+        modules_yaml_path = os.path.join(common_path, "modules_%s.yaml" % lmod_or_tcl)
+        destination = os.path.join(env_common_dir, "modules.yaml")
+        shutil.copy(modules_yaml_path, destination)
 
     def site_configs_dir(self):
         site_configs_dir = os.path.join(site_path, self.site)
