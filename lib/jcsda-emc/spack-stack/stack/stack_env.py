@@ -114,6 +114,9 @@ class StackEnv(object):
         with open(site_modules_yaml_path, "r") as f:
             site_modules_yaml = syaml.load_config(f)
         lmod_or_tcl_list = site_modules_yaml["modules"]["default"]["enable"]
+        assert site_modules_yaml["modules"]["default"]["enable"], (
+            "Set 'modules:default:enable' in site modules.yaml, or use --modulesys {tcl,lmod}"
+        )
         if len(set(lmod_or_tcl_list)) > 1:
             logging.warning(
                 "WARNING: Multiple lmod/tcl settings found for %s; using the first"
