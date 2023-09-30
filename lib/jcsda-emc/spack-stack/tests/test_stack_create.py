@@ -77,3 +77,24 @@ def test_containers(container):
         return
     container_wo_ext = os.path.splitext(container)[0]
     stack_create("create", "ctr", container_wo_ext, "--dir", test_dir, "--overwrite")
+
+@pytest.mark.extension("stack")
+@pytest.mark.filterwarnings("ignore::UserWarning")
+def test_modulesys():
+    modsystems = {"lmod", "tcl"}
+    for modulesys in modsystems:
+        stack_create("create", "env", "--site", "hera", "--dir", test_dir, "--overwrite", "--modulesys", modulesys)
+    modules_yaml_path = os.path.join(test_dir, "common", "modules.yaml")
+    with open(modules_yaml_path, "r") as f:
+        modules_yaml_txt = f.read()
+    assert "%s:" % modulesys in modules_yaml_txt
+    assert "%s:" % list(modsystems.difference(modulesys))[0] not in modules_yaml_txt
+
+@pytest.mark.extension("stack")
+@pytest.mark.filterwarnings("ignore::UserWarning")
+def test_upstream():
+    stack_create("create", "env", "--site", "hera", "--dir", test_dir, "--overwrite", "--upstream", "/test/path/to/upstream/env")
+    spack_yaml_path = os.path.join(test_dir, "spack.yaml")
+    with open(spack_yaml_path, "r") as f:
+        spack_yaml_txt = f.read()
+    assert "install_tree: /test/path/to/upstream/env" in spack_yaml_txt
