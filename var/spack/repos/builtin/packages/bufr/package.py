@@ -43,7 +43,7 @@ class Bufr(CMakePackage):
     # C test does not explicity link to -lm causing DSO error when building shared libs
     patch("c-tests-libm.patch", when="@11.5.0:11.7.0")
     # Patch to identify Python version correctly
-    patch("python-version.patch", when="+python")
+    patch("python-version.patch", when="+python @:12.0.0")
 
     variant("python", default=False, description="Enable Python interface?")
     variant("shared", default=True, description="Build shared libraries", when="@11.5:")
