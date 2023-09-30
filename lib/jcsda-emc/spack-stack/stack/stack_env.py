@@ -114,19 +114,11 @@ class StackEnv(object):
         with open(site_modules_yaml_path, "r") as f:
             site_modules_yaml = syaml.load_config(f)
         lmod_or_tcl_list = site_modules_yaml["modules"]["default"]["enable"]
-        assert (
-            lmod_or_tcl_list
-        ), "Set 'modules:default:enable' in site modules.yaml, or use --modulesys {tcl,lmod}"
-        if len(set(lmod_or_tcl_list)) > 1:
-            logging.warning(
-                "WARNING: Multiple lmod/tcl settings found for %s; using the first"
-                % site_modules_yaml_path
-            )
-        lmod_or_tcl = lmod_or_tcl_list[0]
-        assert lmod_or_tcl in ("lmod", "tcl"), (
-            "lmod/tcl setting could not be determined for %s" % site_modules_yaml_path
-        )
-        return lmod_or_tcl
+        assert lmod_or_tcl_list and (
+            set(lmod_or_tcl_list) in ({"tcl"}, {"lmod"})
+        ), """Set one and only one value ('lmod' or 'tcl') under 'modules:default:enable'
+           in site modules.yaml, or use '--modulesys {tcl,lmod}'"""
+        return lmod_or_tcl_list[0]
 
     def _copy_common_includes(self):
         """Copy common directory into environment"""
