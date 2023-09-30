@@ -93,7 +93,7 @@ def test_modulesys():
             test_dir,
             "--overwrite",
             "--modulesys",
-            modulesys
+            modulesys,
         )
     modules_yaml_path = os.path.join(test_dir, "common", "modules.yaml")
     with open(modules_yaml_path, "r") as f:
@@ -114,7 +114,7 @@ def test_upstream():
         test_dir,
         "--overwrite",
         "--upstream",
-        "/test/path/to/upstream/env"
+        "/test/path/to/upstream/env",
     )
     spack_yaml_path = os.path.join(test_dir, "spack.yaml")
     with open(spack_yaml_path, "r") as f:
