@@ -89,13 +89,15 @@ def test_modulesys():
             "env",
             "--site",
             "hera",
+            "--name",
+            "modulesys_test",
             "--dir",
             test_dir,
             "--overwrite",
             "--modulesys",
             modulesys,
         )
-    modules_yaml_path = os.path.join(test_dir, "common", "modules.yaml")
+    modules_yaml_path = os.path.join(test_dir, "modulesys_test", "common", "modules.yaml")
     with open(modules_yaml_path, "r") as f:
         modules_yaml_txt = f.read()
     assert "%s:" % modulesys in modules_yaml_txt
@@ -110,13 +112,15 @@ def test_upstream():
         "env",
         "--site",
         "hera",
+        "--name",
+        "upstream_test",
         "--dir",
         test_dir,
         "--overwrite",
         "--upstream",
         "/test/path/to/upstream/env",
     )
-    spack_yaml_path = os.path.join(test_dir, "spack.yaml")
+    spack_yaml_path = os.path.join(test_dir, "upstream_test", "spack.yaml")
     with open(spack_yaml_path, "r") as f:
         spack_yaml_txt = f.read()
     assert "install_tree: /test/path/to/upstream/env" in spack_yaml_txt
