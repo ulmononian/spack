@@ -22,4 +22,5 @@ def stack_path(*paths):
 common_path = stack_path('configs', 'common')
 site_path = stack_path('configs', 'sites')
 container_path = stack_path('configs', 'containers')
+container_specs_path = stack_path('configs', 'containers', 'specs')
 template_path = stack_path('configs', 'templates')

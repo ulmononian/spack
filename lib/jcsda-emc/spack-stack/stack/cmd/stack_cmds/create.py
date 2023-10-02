@@ -51,37 +51,23 @@ def container_config_help():
     help_string = "Pre-configured container." + os.linesep
     help_string += "Available options are: " + os.linesep
     for config in container_configs:
+        if config == "README.md":
+            continue
         help_string += "\t" + config.rstrip(".yaml") + os.linesep
+    return help_string
+
+
+def container_specs_help():
+    _, _, specs_lists = next(os.walk(stack_path("configs", "containers", "specs")))
+    help_string = "List of specs to build in container." + os.linesep
+    help_string += "Available options are: " + os.linesep
+    for specs_list in specs_lists:
+        help_string += "\t" + specs_list.rstrip(".yaml") + os.linesep
     return help_string
 
 
 def setup_common_parser_args(subparser):
     """Shared CLI args for container and environment subcommands"""
-    subparser.add_argument(
-        "--template",
-        type=str,
-        required=False,
-        dest="template",
-        default="empty",
-        help=template_help(),
-    )
-
-    subparser.add_argument(
-        "--name",
-        type=str,
-        required=False,
-        default=None,
-        help='Environment name, defaults to "{}".'.format(default_env_name),
-    )
-
-    subparser.add_argument(
-        "--dir",
-        type=str,
-        required=False,
-        default=default_env_path,
-        help="Environment will be placed in <dir>/<name>/."
-        " Default is {}/<name>/.".format(default_env_path),
-    )
 
     subparser.add_argument(
         "--overwrite",
@@ -89,6 +75,62 @@ def setup_common_parser_args(subparser):
         required=False,
         default=False,
         help="Overwrite existing environment if it exists." " Warning this is dangerous.",
+    )
+
+
+def setup_ctr_parser(subparser):
+    """create container-specific parsing options"""
+
+    subparser.add_argument("--container", 
+        required=True,
+        help=container_config_help()
+    )
+
+    subparser.add_argument("--specs",
+        required=True,
+        help=container_specs_help()
+    )
+
+    subparser.add_argument(
+        "--dir",
+        type=str,
+        required=False,
+        default=default_env_path,
+        help="Environment will be placed in <dir>/container/."
+        " Default is {}/container/.".format(default_env_path)
+    )
+
+    setup_common_parser_args(subparser)
+
+
+def setup_env_parser(subparser):
+    """create environment-specific parsing options"""
+    setup_common_parser_args(subparser)
+
+    subparser.add_argument(
+        "--dir",
+        type=str,
+        required=False,
+        default=default_env_path,
+        help="Environment will be placed in <dir>/<env-name>/."
+        " Default is {}/<env-name>/.".format(default_env_path),
+    )
+
+    subparser.add_argument(
+        "--name",
+        type=str,
+        required=False,
+        default=None,
+        help='Environment name, defaults to <template>.<site>',
+    )
+
+    subparser.add_argument(
+        "--template",
+        type=str,
+        required=False,
+        dest="template",
+        default="empty",
+        help=template_help(),
     )
 
     subparser.add_argument(
@@ -106,17 +148,6 @@ def setup_common_parser_args(subparser):
         help="Include upstream environment (/path/to/spack-stack-x.y.z/envs/unified-env/install)",
     )
 
-
-def setup_ctr_parser(subparser):
-    """create container-specific parsing options"""
-    subparser.add_argument("container", help=container_config_help())
-
-    setup_common_parser_args(subparser)
-
-
-def setup_env_parser(subparser):
-    """create environment-specific parsing options"""
-    setup_common_parser_args(subparser)
     subparser.add_argument(
         "--site", type=str, required=False, default=default_site(), help=site_help()
     )
@@ -145,7 +176,7 @@ def setup_create_parser(subparser):
 def container_create(args):
     """Create pre-configured container"""
 
-    container = StackContainer(args.container, args.template, args.name, args.dir, args.packages)
+    container = StackContainer(args.container, args.dir, args.specs)
 
     env_dir = container.env_dir
     if os.path.exists(env_dir):
