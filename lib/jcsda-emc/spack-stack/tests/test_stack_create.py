@@ -71,9 +71,11 @@ def test_sites(site):
 
 @pytest.mark.extension("stack")
 @pytest.mark.parametrize("container", all_containers())
-@pytest.mark.filterwarnings("ignore::UserWarning")
+@pytest.mark.parametrize("spec", all_specs())
+#@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_containers(container):
-    if not container:
+    if not container or not spec:
         return
     container_wo_ext = os.path.splitext(container)[0]
-    stack_create("create", "ctr", container_wo_ext, "--dir", test_dir, "--overwrite")
+    spec_wo_ext = os.path.splitext(spec)[0]
+    stack_create("create", "ctr", "--container", container_wo_ext, "--spec", spec_wo_ext, "--dir", test_dir, "--overwrite")
