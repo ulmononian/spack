@@ -60,7 +60,7 @@ class GmaoSwellEnv(BundlePackage):
 
     conflicts(
         "%gcc platform=darwin",
-        msg="ewok-env does " + "not build with gcc (11?) on macOS (12), use apple-clang",
+        msg="gmao-swell-env does " + "not build with gcc (11?) on macOS (12), use apple-clang",
     )
 
     # There is no need for install() since there is no code.
