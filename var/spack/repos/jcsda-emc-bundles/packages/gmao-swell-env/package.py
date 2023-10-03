@@ -20,7 +20,10 @@ class GmaoSwellEnv(BundlePackage):
     # Main JEDI modules
     depends_on("jedi-base-env +python", type="run")
 
-    # Jedi interfaces to build
+    # Add CRTM 2.4.0
+    depends_on("crtm@v2.4-jedi.2", type="run")
+
+    # JEDI interfaces used by swell
     depends_on("jedi-fv3-env", type="run")
     depends_on("soca-env", type="run")
 
