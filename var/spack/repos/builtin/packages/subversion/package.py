@@ -38,7 +38,7 @@ class Subversion(AutotoolsPackage):
     variant("perl", default=False, description="Build with Perl bindings")
     variant("apxs", default=True, description="Build with APXS")
     variant("nls", default=True, description="Enable Native Language Support")
-    variant("pic", default=False, description="Enable position-independent code")
+    variant("pic", default=True, description="Enable position-independent code")
 
     depends_on("apr")
     depends_on("apr-util")
