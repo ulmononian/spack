@@ -48,11 +48,11 @@ def template_help():
 
 def container_config_help():
     _, _, container_configs = next(os.walk(stack_path("configs", "containers")))
+    # Exclude files like "README.md"
+    container_configs = [x for x in container_configs if x.endswith(".yaml")]
     help_string = "Pre-configured container." + os.linesep
     help_string += "Available options are: " + os.linesep
     for config in container_configs:
-        if config == "README.md":
-            continue
         help_string += "\t" + config.rstrip(".yaml") + os.linesep
     return help_string
 
