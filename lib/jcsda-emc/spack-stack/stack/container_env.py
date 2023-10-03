@@ -3,11 +3,7 @@ import os
 
 import spack
 import spack.util.spack_yaml as syaml
-from spack.extensions.stack.stack_paths import (
-    common_path,
-    container_path,
-    container_specs_path,
-)
+from spack.extensions.stack.stack_paths import common_path, container_path, container_specs_path
 
 
 class StackContainer:
@@ -45,13 +41,6 @@ class StackContainer:
         """Merge base packages and app's spack.yaml into
         output container file.
         """
-        #template_env = os.path.join(self.template_path, "spack.yaml")
-        #with open(template_env, "r") as f:
-        #    # Spack uses :: to override settings.
-        #    # but it's not understood when used in a spack.yaml
-        #    filedata = f.read()
-        #    filedata = filedata.replace("::", ":")
-        #    template_yaml = syaml.load_config(filedata)
 
         with open(self.container_path, "r") as f:
             filedata = f.read()
@@ -60,9 +49,6 @@ class StackContainer:
 
         with open(self.specs_path, "r") as f:
             specs_yaml = syaml.load_config(f)
-
-        # Create copy so we can modify it
-        original_yaml = copy.deepcopy(container_yaml)
 
         with open(self.base_packages, "r") as f:
             filedata = f.read()

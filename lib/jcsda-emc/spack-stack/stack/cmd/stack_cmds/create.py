@@ -81,15 +81,9 @@ def setup_common_parser_args(subparser):
 def setup_ctr_parser(subparser):
     """create container-specific parsing options"""
 
-    subparser.add_argument("--container", 
-        required=True,
-        help=container_config_help()
-    )
+    subparser.add_argument("--container", required=True, help=container_config_help())
 
-    subparser.add_argument("--specs",
-        required=True,
-        help=container_specs_help()
-    )
+    subparser.add_argument("--specs", required=True, help=container_specs_help())
 
     subparser.add_argument(
         "--dir",
@@ -97,7 +91,7 @@ def setup_ctr_parser(subparser):
         required=False,
         default=default_env_path,
         help="Environment will be placed in <dir>/container/."
-        " Default is {}/container/.".format(default_env_path)
+        " Default is {}/container/.".format(default_env_path),
     )
 
     setup_common_parser_args(subparser)
@@ -121,7 +115,7 @@ def setup_env_parser(subparser):
         type=str,
         required=False,
         default=None,
-        help='Environment name, defaults to <template>.<site>',
+        help="Environment name, defaults to <template>.<site>",
     )
 
     subparser.add_argument(
