@@ -56,6 +56,7 @@ class GmaoSwellEnv(BundlePackage):
     # depends_on("py-isodate", type="run")
     # depends_on("py-questionary", type="run")
     # depends_on("py-scikit-learn", type="run")
+    # depends_on("py-seaborn", type="run")
 
     conflicts(
         "%gcc platform=darwin",
