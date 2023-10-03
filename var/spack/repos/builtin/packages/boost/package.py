@@ -609,7 +609,7 @@ class Boost(Package):
 
         # std::unary_function was removed in C++17 so need to set the following
         # flag for building boost
-        if (cxxstd == "17") or (cxxstd == "2a") or (cxxstd == "20") or
+        if (cxxstd == "17") or (cxxstd == "2a") or (cxxstd == "20") or \
            (cxxstd == "23") or (cxxstd == "26"):
             cxxflags.append("-DBOOST_NO_CXX98_FUNCTION_BASE")
 
