@@ -38,7 +38,7 @@ class Subversion(AutotoolsPackage):
     variant("perl", default=False, description="Build with Perl bindings")
     variant("apxs", default=True, description="Build with APXS")
     variant("nls", default=True, description="Enable Native Language Support")
-    variant("pic", default=True, description="Enable position-independent code")
+    variant("pic", default=False, description="Enable position-independent code")
 
     depends_on("apr")
     depends_on("apr-util")
@@ -108,17 +108,21 @@ class Subversion(AutotoolsPackage):
         if "+nls" in spec:
             args.append("--enable-nls")
             ldflags = []
-            if not is_system_path(spec["gettext"].prefix):
-                ldflags.append(spec["gettext"].libs.search_flags)
-            # Using .libs.link_flags is the canonical way to add these arguments,
-            # but since libintl is much smaller than the rest and also the only
-            # necessary one, we specify it by hand here.
-            libs = ["-lintl"]
+            libs = []
+            if "intl" in spec["gettext"].libs.names:
+                # Using .libs.link_flags is the canonical way to add these arguments,
+                # but since libintl is much smaller than the rest and also the only
+                # necessary one, we specify it by hand here.
+                libs.append("-lintl")
+                if not is_system_path(spec["gettext"].prefix):
+                    ldflags.append(spec["gettext"].libs.search_flags)
             if spec["gettext"].satisfies("~shared"):
                 ldflags.append(spec["iconv"].libs.search_flags)
                 libs.append(spec["iconv"].libs.link_flags)
-            args.append("LDFLAGS=%s" % " ".join(ldflags))
-            args.append("LIBS=%s" % " ".join(libs))
+            if ldflags:
+                args.append("LDFLAGS=%s" % " ".join(ldflags))
+            if libs:
+                args.append("LIBS=%s" % " ".join(libs))
         else:
             args.append("--disable-nls")
 
