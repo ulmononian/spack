@@ -23,9 +23,9 @@ class GmaoSwellEnv(BundlePackage):
     # Add CRTM 2.4.0
     depends_on("crtm@v2.4-jedi.2", type="run")
 
-    # JEDI interfaces used by swell
-    depends_on("jedi-fv3-env", type="run")
-    depends_on("soca-env", type="run")
+    # Additional dependencies for JEDI used by swell
+    depends_on("fms@release-jcsda", type="run")
+    depends_on("nco", type="run")
 
     # GEOS
     # depends_on("geos-dev-env", type="run")  # We should have the modules needed to build GEOSgcm
