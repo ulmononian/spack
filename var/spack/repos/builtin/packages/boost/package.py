@@ -175,8 +175,11 @@ class Boost(Package):
             "14",
             # C++17 is not supported by Boost < 1.63.0.
             conditional("17", when="@1.63.0:"),
-            # C++20/2a is not support by Boost < 1.73.0
+            # C++20/2a is not supported by Boost < 1.73.0
             conditional("2a", when="@1.73.0:"),
+            conditional("20", when="@1.77.0:"),
+            conditional("23", when="@1.79.0:"),
+            conditional("26", when="@1.79.0:"),
         ),
         multi=False,
         description="Use the specified C++ standard when building.",
@@ -587,10 +590,10 @@ class Boost(Package):
         cxxflags = []
 
         # Deal with C++ standard.
+        cxxstd = spec.variants["cxxstd"].value
         if spec.satisfies("@1.66:"):
             options.append("cxxstd={0}".format(spec.variants["cxxstd"].value))
         else:  # Add to cxxflags for older Boost.
-            cxxstd = spec.variants["cxxstd"].value
             flag = getattr(self.compiler, "cxx{0}_flag".format(cxxstd))
             if flag:
                 cxxflags.append(flag)
@@ -603,6 +606,17 @@ class Boost(Package):
 
         if not spec.satisfies("@:1.70 %intel"):
             cxxflags.append("-DBOOST_PARAMETER_DISABLE_PERFECT_FORWARDING")
+
+        # std::unary_function was removed in C++17 so need to set the following
+        # flag for building boost
+        if (
+            (cxxstd == "17")
+            or (cxxstd == "2a")
+            or (cxxstd == "20")
+            or (cxxstd == "23")
+            or (cxxstd == "26")
+        ):
+            cxxflags.append("-DBOOST_NO_CXX98_FUNCTION_BASE")
 
         # clang is not officially supported for pre-compiled headers
         # and at least in clang 3.9 still fails to build
