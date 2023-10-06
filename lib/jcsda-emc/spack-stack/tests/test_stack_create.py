@@ -51,6 +51,17 @@ def all_containers():
         return None
 
 
+def all_specs():
+    specs_path = stack_path("configs", "containers", "specs")
+    if specs_path:
+        _, _, specs = next(os.walk(specs_path))
+        # Exclude files like "README.md"
+        specs = [x for x in specs if x.endswith(".yaml")]
+        return specs
+    else:
+        return None
+
+
 @pytest.mark.extension("stack")
 @pytest.mark.parametrize("template", all_templates())
 @pytest.mark.filterwarnings("ignore::UserWarning")
@@ -71,13 +82,24 @@ def test_sites(site):
 
 @pytest.mark.extension("stack")
 @pytest.mark.parametrize("container", all_containers())
-@pytest.mark.filterwarnings("ignore::UserWarning")
-def test_containers(container):
-    if not container:
+@pytest.mark.parametrize("spec", all_specs())
+# @pytest.mark.filterwarnings("ignore::UserWarning")
+def test_containers(container, spec):
+    if not container or not spec:
         return
     container_wo_ext = os.path.splitext(container)[0]
-    stack_create("create", "ctr", container_wo_ext, "--dir", test_dir, "--overwrite")
-
+    spec_wo_ext = os.path.splitext(spec)[0]
+    stack_create(
+        "create",
+        "ctr",
+        "--container",
+        container_wo_ext,
+        "--spec",
+        spec_wo_ext,
+        "--dir",
+        test_dir,
+        "--overwrite",
+    )
 
 @pytest.mark.extension("stack")
 @pytest.mark.filterwarnings("ignore::UserWarning")
