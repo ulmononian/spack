@@ -162,7 +162,7 @@ class StackEnv(object):
         site_modules_yaml["modules"]["default"]["enable"][0] = lmod_or_tcl
         current_config = site_modules_yaml["modules"]["default"][current_sys]
         site_modules_yaml["modules"]["default"][lmod_or_tcl] = current_config
-        del(site_modules_yaml["modules"]["default"][current_sys])
+        del site_modules_yaml["modules"]["default"][current_sys]
         with open(site_modules_yaml_path, "w") as f:
             syaml.dump_config(site_modules_yaml, f)
 
