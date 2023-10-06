@@ -127,13 +127,13 @@ class StackEnv(object):
         shutil.copytree(
             common_path, env_common_dir, ignore=shutil.ignore_patterns("modules_*.yaml")
         )
-        if not self.modulesys:
-            lmod_or_tcl = self.get_lmod_or_tcl(self.site_configs_dir())
-        else:
+        if self.modulesys:
             lmod_or_tcl = self.modulesys
-        modules_yaml_path = os.path.join(common_path, "modules_%s.yaml" % lmod_or_tcl)
+        else:
+            lmod_or_tcl = self.get_lmod_or_tcl(self.site_configs_dir())
+        common_modules_yaml_path = os.path.join(common_path, "modules_%s.yaml" % lmod_or_tcl)
         destination = os.path.join(env_common_dir, "modules.yaml")
-        shutil.copy(modules_yaml_path, destination)
+        shutil.copy(common_modules_yaml_path, destination)
 
     def site_configs_dir(self):
         site_configs_dir = os.path.join(site_path, self.site)
@@ -148,6 +148,23 @@ class StackEnv(object):
         self.includes.append(site_name)
         env_site_dir = os.path.join(self.env_dir(), site_name)
         shutil.copytree(self.site_configs_dir(), env_site_dir)
+        # Update site modules.yaml if user overrides default module system
+        if not self.modulesys:
+            return
+        lmod_or_tcl = self.modulesys
+        site_modules_yaml_path = os.path.join(env_site_dir, "modules.yaml")
+        with open(site_modules_yaml_path, "r") as f:
+            site_modules_yaml = syaml.load_config(f)
+        current_sys = site_modules_yaml["modules"]["default"]["enable"][0]
+        if lmod_or_tcl == current_sys:
+            return
+        logging.info("Updating site modules.yaml to reflect env module system override setting\n")
+        site_modules_yaml["modules"]["default"]["enable"][0] = lmod_or_tcl
+        site_modules_yaml["modules"]["default"][lmod_or_tcl] = site_modules_yaml["modules"]["default"][current_sys]
+        del(site_modules_yaml["modules"]["default"][current_sys])
+        with open(site_modules_yaml_path, "w") as f:
+            syaml.dump_config(site_modules_yaml, f)
+        
 
     def _copy_package_includes(self):
         """Overwrite base packages in environment common dir"""
