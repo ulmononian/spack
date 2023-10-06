@@ -101,6 +101,7 @@ def test_containers(container, spec):
         "--overwrite",
     )
 
+
 @pytest.mark.extension("stack")
 @pytest.mark.filterwarnings("ignore::UserWarning")
 def test_modulesys():
