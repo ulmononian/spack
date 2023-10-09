@@ -31,7 +31,7 @@ class EcmwfAtlas(CMakePackage):
     depends_on("eckit@1.24:", when="@0.34:")
     depends_on("boost cxxstd=14 visibility=hidden", when="@0.26.0:0.33.99", type=("build", "run"))
     depends_on("boost cxxstd=17 visibility=hidden", when="@0.34.0:", type=("build", "run"))
-    variant("fckit", default=True)
+    variant("fckit", default=True, description="Enable fckit")
     depends_on("fckit@:0.10", when="@:0.33 +fckit")
     depends_on("fckit@0.11:", when="@0.34: +fckit")
     depends_on("python")
@@ -48,18 +48,15 @@ class EcmwfAtlas(CMakePackage):
         values=("Debug", "Release", "RelWithDebInfo"),
     )
 
-    variant("openmp", default=True, description="Use OpenMP?")
+    variant("openmp", default=True, description="Use OpenMP")
     depends_on("llvm-openmp", when="+openmp %apple-clang", type=("build", "run"))
-    variant("shared", default=True)
+    variant("shared", default=True, description="Build shared libraries")
 
-    variant("trans", default=False)
-    depends_on("ectrans@:1.0.0", when="@:0.30.0 +trans")
+    variant("trans", default=False, description="Enable trans")
     depends_on("ectrans@1.1.0:", when="@0.31.0: +trans")
-    # variant('cgal', default=False)
-    # depends_on('cgal', when='+cgal')
-    variant("eigen", default=True)
+    variant("eigen", default=True, description="Enable eigen")
     depends_on("eigen", when="+eigen")
-    variant("fftw", default=True)
+    variant("fftw", default=True, description="Enable fftw")
     depends_on("fftw-api", when="+fftw")
 
     variant("fismahigh", default=False, description="Apply patching for FISMA-high compliance")
