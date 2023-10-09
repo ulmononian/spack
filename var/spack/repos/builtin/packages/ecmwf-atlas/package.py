@@ -53,15 +53,16 @@ class EcmwfAtlas(CMakePackage):
     depends_on("llvm-openmp", when="+openmp %apple-clang", type=("build", "run"))
     variant("shared", default=True)
 
-    variant("trans", default=False)
-    depends_on("ectrans@:1.0.0", when="@:0.30.0 +trans")
-    depends_on("ectrans@1.1.0:", when="@0.31.0: +trans")
-    # variant('cgal', default=False)
-    # depends_on('cgal', when='+cgal')
+    variant("ectrans", default=False, description="Enable ectrans", when="@0.31.0:")
+    depends_on("ectrans@1.1.0:", when="+ectrans")
     variant("eigen", default=True)
     depends_on("eigen", when="+eigen")
     variant("fftw", default=True)
     depends_on("fftw-api", when="+fftw")
+    variant("cgal", default=False, description="Enable cgal")
+    depends_on("cgal", when="+cgal")
+    variant("tesselation", default=False, description="Enable tesselation", when="@0.35.0:")
+    depends_on("qhull", when="+tesselation")
 
     variant("fismahigh", default=False, description="Apply patching for FISMA-high compliance")
 
@@ -69,11 +70,16 @@ class EcmwfAtlas(CMakePackage):
         args = [
             self.define_from_variant("ENABLE_OMP", "openmp"),
             self.define_from_variant("ENABLE_FCKIT", "fckit"),
-            self.define_from_variant("ENABLE_TRANS", "trans"),
             self.define_from_variant("ENABLE_EIGEN", "eigen"),
             self.define_from_variant("ENABLE_FFTW", "fftw"),
+            self.define_from_variant("ENABLE_CGAL", "cgal"),
             "-DPYTHON_EXECUTABLE:FILEPATH=" + self.spec["python"].command.path,
         ]
+        if self.spec.satisfies("@0.31:0.34"):
+            self.define_from_variant("ENABLE_TRANS", "ectrans")
+        if self.spec.satisfies("@0.35:"):
+            self.define_from_variant("ENABLE_ECTRANS", "ectrans")
+            self.define_from_variant("ENABLE_TESSELATION", "tesselation"),
         if "~shared" in self.spec:
             args.append("-DBUILD_SHARED_LIBS=OFF")
         return args
