@@ -59,8 +59,6 @@ class EcmwfAtlas(CMakePackage):
     depends_on("eigen", when="+eigen")
     variant("fftw", default=True)
     depends_on("fftw-api", when="+fftw")
-    variant("cgal", default=False, description="Enable cgal")
-    depends_on("cgal", when="+cgal")
     variant("tesselation", default=False, description="Enable tesselation", when="@0.35.0:")
     depends_on("qhull", when="+tesselation")
 
@@ -72,7 +70,6 @@ class EcmwfAtlas(CMakePackage):
             self.define_from_variant("ENABLE_FCKIT", "fckit"),
             self.define_from_variant("ENABLE_EIGEN", "eigen"),
             self.define_from_variant("ENABLE_FFTW", "fftw"),
-            self.define_from_variant("ENABLE_CGAL", "cgal"),
             "-DPYTHON_EXECUTABLE:FILEPATH=" + self.spec["python"].command.path,
         ]
         if self.spec.satisfies("@0.31:0.34"):
