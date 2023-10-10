@@ -169,7 +169,6 @@ class StackEnv(object):
         syaml.dump_config(site_modules_yaml, stream)
         with open(site_modules_yaml_path, "w") as f:
             f.write(stream.getvalue().replace("'enable:':", "enable::"))
-            
 
     def _copy_package_includes(self):
         """Overwrite base packages in environment common dir"""
