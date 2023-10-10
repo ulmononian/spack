@@ -18,10 +18,10 @@ class JediToolsEnv(BundlePackage):
 
     variant("latex", default=False, description="Enable building LaTeX documentation with Sphinx")
 
-    # Don't install awscli and/or aws-parallelcluster via spack,
-    # they are not well maintained packages and have terrible
-    # dependencies. Use a venv on top of spack-stack instead.
-    # depends_on("awscli", type="run")
+    depends_on("awscli-v2", type="run")
+    # Don't install aws-parallelcluster via spack, this is
+    # not well maintained package with strict dependencies.
+    # Use a venv on top of spack-stack instead.
     # depends_on("aws-parallelcluster", type="run")
     depends_on("py-click", type="run")
     depends_on("py-openpyxl", type="run")
