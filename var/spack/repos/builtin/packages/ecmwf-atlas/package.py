@@ -76,10 +76,10 @@ class EcmwfAtlas(CMakePackage):
             "-DPYTHON_EXECUTABLE:FILEPATH=" + self.spec["python"].command.path,
         ]
         if self.spec.satisfies("@0.31:0.34"):
-            self.define_from_variant("ENABLE_TRANS", "ectrans")
+            args.append(self.define_from_variant("ENABLE_TRANS", "ectrans"))
         if self.spec.satisfies("@0.35:"):
-            self.define_from_variant("ENABLE_ECTRANS", "ectrans")
-            self.define_from_variant("ENABLE_TESSELATION", "tesselation"),
+            args.append(self.define_from_variant("ENABLE_ECTRANS", "ectrans"))
+            args.append(self.define_from_variant("ENABLE_TESSELATION", "tesselation"))
         if "~shared" in self.spec:
             args.append("-DBUILD_SHARED_LIBS=OFF")
         return args
