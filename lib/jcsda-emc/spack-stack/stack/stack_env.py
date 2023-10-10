@@ -1,4 +1,5 @@
 import copy
+import io
 import logging
 import os
 import re
@@ -163,8 +164,12 @@ class StackEnv(object):
         current_config = site_modules_yaml["modules"]["default"][current_sys]
         site_modules_yaml["modules"]["default"][lmod_or_tcl] = current_config
         del site_modules_yaml["modules"]["default"][current_sys]
+        # Write file, and get rid of annoying single quotes
+        stream = io.StringIO()
+        syaml.dump_config(site_modules_yaml, stream)
         with open(site_modules_yaml_path, "w") as f:
-            syaml.dump_config(site_modules_yaml, f)
+            f.write(stream.getvalue().replace("'enable:':", "enable::"))
+            
 
     def _copy_package_includes(self):
         """Overwrite base packages in environment common dir"""
