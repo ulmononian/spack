@@ -1,4 +1,5 @@
 import copy
+import io
 import logging
 import os
 import re
@@ -96,6 +97,7 @@ class StackEnv(object):
         self.install_prefix = kwargs.get("install_prefix", None)
         self.mirror = kwargs.get("mirror", None)
         self.upstreams = kwargs.get("upstreams", None)
+        self.modulesys = kwargs.get("modulesys", None)
 
         if not self.name:
             # site = self.site if self.site else 'default'
@@ -108,11 +110,31 @@ class StackEnv(object):
     def add_includes(self, includes):
         self.includes.extend(includes)
 
+    def get_lmod_or_tcl(self, site_configs_dir):
+        site_modules_yaml_path = os.path.join(site_configs_dir, "modules.yaml")
+        with open(site_modules_yaml_path, "r") as f:
+            site_modules_yaml = syaml.load_config(f)
+        lmod_or_tcl_list = site_modules_yaml["modules"]["default"]["enable"]
+        assert lmod_or_tcl_list and (
+            set(lmod_or_tcl_list) in ({"tcl"}, {"lmod"})
+        ), """Set one and only one value ('lmod' or 'tcl') under 'modules:default:enable'
+           in site modules.yaml, or use '--modulesys {tcl,lmod}'"""
+        return lmod_or_tcl_list[0]
+
     def _copy_common_includes(self):
         """Copy common directory into environment"""
         self.includes.append("common")
         env_common_dir = os.path.join(self.env_dir(), "common")
-        shutil.copytree(common_path, env_common_dir)
+        shutil.copytree(
+            common_path, env_common_dir, ignore=shutil.ignore_patterns("modules_*.yaml")
+        )
+        if self.modulesys:
+            lmod_or_tcl = self.modulesys
+        else:
+            lmod_or_tcl = self.get_lmod_or_tcl(self.site_configs_dir())
+        common_modules_yaml_path = os.path.join(common_path, "modules_%s.yaml" % lmod_or_tcl)
+        destination = os.path.join(env_common_dir, "modules.yaml")
+        shutil.copy(common_modules_yaml_path, destination)
 
     def site_configs_dir(self):
         site_configs_dir = os.path.join(site_path, self.site)
@@ -127,6 +149,26 @@ class StackEnv(object):
         self.includes.append(site_name)
         env_site_dir = os.path.join(self.env_dir(), site_name)
         shutil.copytree(self.site_configs_dir(), env_site_dir)
+        # Update site modules.yaml if user overrides default module system
+        if not self.modulesys:
+            return
+        lmod_or_tcl = self.modulesys
+        site_modules_yaml_path = os.path.join(env_site_dir, "modules.yaml")
+        with open(site_modules_yaml_path, "r") as f:
+            site_modules_yaml = syaml.load_config(f)
+        current_sys = site_modules_yaml["modules"]["default"]["enable"][0]
+        if lmod_or_tcl == current_sys:
+            return
+        logging.info("Updating site modules.yaml to reflect env module system override setting\n")
+        site_modules_yaml["modules"]["default"]["enable"][0] = lmod_or_tcl
+        current_config = site_modules_yaml["modules"]["default"][current_sys]
+        site_modules_yaml["modules"]["default"][lmod_or_tcl] = current_config
+        del site_modules_yaml["modules"]["default"][current_sys]
+        # Write file, and get rid of annoying single quotes
+        stream = io.StringIO()
+        syaml.dump_config(site_modules_yaml, stream)
+        with open(site_modules_yaml_path, "w") as f:
+            f.write(stream.getvalue().replace("'enable:':", "enable::"))
 
     def _copy_package_includes(self):
         """Overwrite base packages in environment common dir"""

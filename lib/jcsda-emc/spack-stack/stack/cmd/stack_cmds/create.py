@@ -143,6 +143,13 @@ def setup_env_parser(subparser):
     )
 
     subparser.add_argument(
+        "--modulesys",
+        type=str,
+        choices=["lmod", "tcl"],
+        help="Override choice of tcl vs. lmod config (default is based on site config)",
+    )
+
+    subparser.add_argument(
         "--site", type=str, required=False, default=default_site(), help=site_help()
     )
 
@@ -193,6 +200,7 @@ def dict_from_args(args):
     dict["base_packages"] = args.packages
     dict["dir"] = args.dir
     dict["upstreams"] = args.upstream
+    dict["modulesys"] = args.modulesys
 
     return dict
 
