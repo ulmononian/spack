@@ -130,4 +130,10 @@ class PyPandas(PythonPackage):
     # https://github.com/spack/spack/issues/40452
     depends_on("py-openpyxl@3.0.7:", type=("run"), when="@1.5.3:")
 
+    # Historical dependencies
+    depends_on("py-setuptools@61:", when="@2.0", type="build")
+    depends_on("py-setuptools@51:", when="@1.3.2:1", type="build")
+    depends_on("py-setuptools@38.6:", when="@1.3.0:1.3.1", type="build")
+    depends_on("py-setuptools@24.2:", when="@:1.2", type="build")
+
     skip_modules = ["pandas.tests", "pandas.plotting._matplotlib", "pandas.core._numba.kernels"]
