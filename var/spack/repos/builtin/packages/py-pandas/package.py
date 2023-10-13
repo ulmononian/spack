@@ -17,6 +17,8 @@ class PyPandas(PythonPackage):
 
     maintainers("adamjstewart")
 
+    variant("excel", default=False, description="Build with support for Excel (py-openpyxl)")
+
     version("2.0.3", sha256="c02f372a88e0d17f36d3093a644c73cfc1788e876a7c4bcb4020a77512e2043c")
     version("2.0.2", sha256="dd5476b6c3fe410ee95926873f377b856dbc4e81a9c605a0dc05aaccc6a7c6c6")
     version("2.0.1", sha256="19b8e5270da32b41ebf12f0e7165efa7024492e9513fb46fb631c5022ae5709d")
@@ -128,7 +130,8 @@ class PyPandas(PythonPackage):
     # https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html#optional-dependencies
 
     # https://github.com/spack/spack/issues/40452
-    depends_on("py-openpyxl@3.0.7:", type=("run"), when="@1.5.3:")
+    depends_on("py-openpyxl", type=("run"), when="+excel")
+    depends_on("py-openpyxl@3.0.7:", type=("run"), when="@1.5.3: +excel")
 
     # Historical dependencies
     depends_on("py-setuptools@61:", when="@2.0", type="build")
