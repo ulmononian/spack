@@ -127,4 +127,7 @@ class PyPandas(PythonPackage):
     # Optional dependencies
     # https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html#optional-dependencies
 
+    # https://github.com/spack/spack/issues/40452
+    depends_on("py-openpyxl@3.0.7:", type=("run"), when="@1.5.3:")
+
     skip_modules = ["pandas.tests", "pandas.plotting._matplotlib", "pandas.core._numba.kernels"]
