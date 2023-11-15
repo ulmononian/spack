@@ -55,14 +55,6 @@ class W3emc(CMakePackage):
     depends_on("sigio", when="@2.7.3")
     depends_on("netcdf-fortran", when="@2.7.3")
 
-    def cmake_args(self):
-        args = [
-            self.define_from_variant("CMAKE_POSITION_INDEPENDENT_CODE", "pic"),
-            self.define_from_variant("BUILD_WITH_BUFR", "bufr"),
-        ]
-
-        return args
-
     def setup_run_environment(self, env):
         if self.spec.satisfies("@:2.9"):
             suffixes = ("4", "d", "8")

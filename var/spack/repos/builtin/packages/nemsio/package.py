@@ -44,3 +44,7 @@ class Nemsio(CMakePackage):
             args.append(self.define("CMAKE_Fortran_COMPILER", self.spec["mpi"].mpifc))
 
         return args
+
+    def check(self):
+        with working_dir(self.builder.build_directory):
+            make("test")
