@@ -54,6 +54,7 @@ class Libxkbcommon(MesonPackage, AutotoolsPackage):
     depends_on("wayland@1.2.0:", when="+wayland")
     depends_on("wayland-protocols@1.7:", when="+wayland")
 
+
 class MesonBuilder(spack.build_systems.meson.MesonBuilder):
     def meson_args(self):
         args = [
@@ -69,7 +70,8 @@ class MesonBuilder(spack.build_systems.meson.MesonBuilder):
             deps = ["zlib", "xz", "iconv"]
             ldflags = [self.spec[lib].libs.search_flags for lib in deps]
             libs = [self.spec[lib].libs.link_flags for lib in deps]
-            env.set("LDFLAGS", " ".join(ldflags+libs))
+            env.set("LDFLAGS", " ".join(ldflags + libs))
+
 
 class AutotoolsBuilder(spack.build_systems.autotools.AutotoolsBuilder):
     def configure_args(self):

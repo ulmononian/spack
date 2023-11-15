@@ -81,7 +81,7 @@ class Libgeotiff(AutotoolsPackage):
                 if dep not in self.spec:
                     continue
                 ldflags.append(self.spec[dep].libs.search_flags)
-                libs.append(self.spec[dep].libs.link_flags) 
+                libs.append(self.spec[dep].libs.link_flags)
             if ldflags or libs:
                 args.append("LDFLAGS=%s" % " ".join(ldflags))
                 args.append("LIBS=%s" % " ".join(libs))

@@ -66,6 +66,9 @@ class Grads(AutotoolsPackage):
     def patch(self):
         filter_file("-lgrib2c", "-lg2c", "configure")
         filter_file("-lpng15", "-lpng", "configure")
+        if self.spec.satisfies("+grib2"):
+            # Name of grib2 C library has changed in recent versions
+            filter_file("grib2c", "g2c", "configure")
 
     # The project is hosted on GitHub for versions 2.2.2 and later
     def url_for_version(self, version):
@@ -75,12 +78,6 @@ class Grads(AutotoolsPackage):
         else:
             url = "ftp://cola.gmu.edu/grads/{}/grads-{}-src.tar.gz"
             return url.format(version.up_to(2), version)
-
-    # Name of grib2 C library has changed in recent versions
-    with when("+grib2"):
-
-        def patch(self):
-            filter_file("grib2c", "g2c", "configure")
 
     def setup_build_environment(self, env):
         spec = self.spec

@@ -6,7 +6,6 @@
 import glob
 import os
 from shutil import Error, copyfile
-import subprocess
 
 from spack.package import *
 

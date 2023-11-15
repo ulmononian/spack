@@ -34,7 +34,7 @@ class Ncview(AutotoolsPackage):
         config_args.append("--with-udunits2_libdir={}".format(spec["udunits"].prefix.lib))
 
         # Use the same C compiler that was used for netcdf-c
-        cc = subprocess.check_output(['nc-config', '--cc']).decode().rstrip('\n')
+        cc = subprocess.check_output(["nc-config", "--cc"]).decode().rstrip("\n")
         config_args.append("CC={}".format(cc))
 
         return config_args
