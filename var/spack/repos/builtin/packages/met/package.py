@@ -1,4 +1,4 @@
-# Copyright 2013-2022 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2023 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -14,10 +14,12 @@ class Met(AutotoolsPackage):
     configurable methods to compute statistics and diagnostics"""
 
     homepage = "https://dtcenter.org/community-code/model-evaluation-tools-met"
+    git = "https://github.com/dtcenter/MET"
     url = "https://github.com/dtcenter/MET/archive/refs/tags/v11.0.1.tar.gz"
 
     maintainers("AlexanderRichert-NOAA", "climbfuji")
 
+    version("develop", branch="develop")
     version("11.1.0", sha256="e2e371ae1f49185ff8bf08201b1a3e90864a467aa3369b04132d231213c3c9e5")
     version("11.0.2", sha256="f720d15e1d6c235c9a41fd97dbeb0eb1082fb8ae99e1bcdcb5e51be9b50bdfbf")
     version("11.0.1", sha256="48d471ad4634f1b969d9358c51925ce36bf0a1cec5312a6755203a4794b81646")
@@ -37,7 +39,7 @@ class Met(AutotoolsPackage):
 
     depends_on("gsl")
     depends_on("bufr")
-    depends_on("zlib")
+    depends_on("zlib-api")
     depends_on("netcdf-c")
     depends_on("netcdf-cxx4")
     depends_on("g2c", when="+grib2")
@@ -59,8 +61,10 @@ class Met(AutotoolsPackage):
     patch("openmp_shape_patch.patch", when="@10.1.0")
 
     # https://github.com/JCSDA/spack-stack/issues/615
-    patch("apple-clang-string-cast-operator.patch", when="@10.1.1:11.0.99 %apple-clang@14:")
-    patch("apple-clang-no-register.patch", when="@10.1.1:11.0.99 %apple-clang@14:")
+    # TODO(srherbener) Apple clang 14.x is getting pickier! When these updates are
+    # merged into the MET code base, the following two patches can be removed.
+    patch("apple-clang-string-cast-operator.patch", when="@10.1.1:11.0 %apple-clang@14:")
+    patch("apple-clang-no-register.patch", when="@10.1.1:11.0 %apple-clang@14:")
 
     def url_for_version(self, version):
         if version < Version("11"):
@@ -121,7 +125,6 @@ class Met(AutotoolsPackage):
             g2c_libdir = find_libraries(
                 "libg2c", root=g2c.prefix, shared=shared_g2c, recursive=True
             ).directories[0]
-            env.set("MET_GRIB2CLIB", g2c_libdir)
             env.set("MET_GRIB2CINC", g2c.prefix.include)
             env.set("GRIB2CLIB_NAME", "-lg2c")
 
@@ -160,26 +163,18 @@ class Met(AutotoolsPackage):
 
     def configure_args(self):
         args = []
-        spec = self.spec
-
-        if "+grib2" in spec:
-            args.append("--enable-grib2")
-
-        if "+python" in spec:
-            args.append("--enable-python")
-
-        if "~openmp" in spec:
-            args.append("--disable-openmp")
-
-        if "+lidar2nc" in spec:
-            args.append("--enable-lidar2nc")
-
-        if "+modis" in spec:
-            args.append("--enable-modis")
-
-        if "+graphics" in spec:
-            args.append("--enable-mode_graphics")
+        args.extend(self.enable_or_disable("grib2"))
+        args.extend(self.enable_or_disable("python"))
+        args.extend(self.enable_or_disable("openmp"))
+        args.extend(self.enable_or_disable("lidar2nc"))
+        args.extend(self.enable_or_disable("modis"))
+        args.extend(self.enable_or_disable("mode_graphics", variant="graphics"))
 
         if self.spec.satisfies("%apple-clang@14:"):
             args.append("CXXFLAGS=-std=gnu++17")
+
         return args
+
+
+#    def setup_run_environment(self, env):
+#        env.set('MET_BASE', self.prefix)
