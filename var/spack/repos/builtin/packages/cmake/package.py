@@ -195,6 +195,7 @@ class Cmake(Package):
     # a build dependency, and its libs will not interfere with others in
     # the build.
     variant("ownlibs", default=True, description="Use CMake-provided third-party libraries")
+    variant("owncurl", default=False, description="Use CMake-provided curl library")
     variant(
         "doc",
         default=False,
@@ -225,7 +226,7 @@ class Cmake(Package):
     # provide Spack's TLS libs anyways, which is not flexible, and actually
     # leads to issues where we have to keep track of the vendored curl version
     # and its conflicts with OpenSSL.
-    depends_on("curl")
+    depends_on("curl", when="~owncurl")
 
     # When using curl, cmake defaults to using system zlib too, probably because
     # curl already depends on zlib. Therefore, also unconditionaly depend on zlib.
@@ -247,6 +248,11 @@ class Cmake(Package):
     with when("+doc"):
         depends_on("python@2.7.11:", type="build")
         depends_on("py-sphinx", type="build")
+
+    for plat in ["darwin", "linux", "cray"]:
+        with when("~ownlibs platform=%s" % plat):
+            depends_on("openssl")
+            depends_on("openssl@:1.0", when="@:3.6.9")
 
     # TODO: update curl package to build with Windows SSL implementation
     # at which point we can build with +ownlibs on Windows
@@ -362,7 +368,8 @@ class Cmake(Package):
                     args.append("--no-system-cppdap")
 
             # Whatever +/~ownlibs, use system curl.
-            args.append("--system-curl")
+            if "~owncurl" in spec:
+                args.append("--system-curl")
             args.append("--no-qt-gui")
 
             if "+doc" in spec:
@@ -394,18 +401,6 @@ class Cmake(Package):
                 "-DCMAKE_PREFIX_PATH={0}".format(";".join(str(v) for v in prefixes)),
             ]
         )
-
-        if self.spec.satisfies("^openssl~shared"):
-            args.append(
-                "-DOPENSSL_CRYPTO_LIBRARY={0};{1}".format(
-                    find_libraries("libcrypto", self.spec["openssl"].prefix.lib, shared=False),
-                    find_libraries(
-                        "libz",
-                        self.spec["zlib"].prefix.lib,
-                        shared=self.spec["zlib"].satisfies("+shared"),
-                    ),
-                )
-            )
 
         return args
 
