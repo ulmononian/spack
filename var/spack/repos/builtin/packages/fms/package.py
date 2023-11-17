@@ -123,8 +123,6 @@ class Fms(CMakePackage):
             self.define_from_variant("FPIC", "pic"),
             self.define_from_variant("USE_DEPRECATED_IO", "deprecated_io"),
         ]
-        with when("@2023.02:"):
-            args.append(self.define_from_variant("USE_DEPRECATED_IO", "use_fmsio"))
 
         args.append(self.define("CMAKE_C_COMPILER", self.spec["mpi"].mpicc))
         args.append(self.define("CMAKE_CXX_COMPILER", self.spec["mpi"].mpicxx))
