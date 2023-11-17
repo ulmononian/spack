@@ -21,7 +21,7 @@ class ProdUtil(CMakePackage):
     maintainers("AlexanderRichert-NOAA", "Hang-Lei-NOAA", "edwardhartnett")
 
     version("develop", branch="develop")
-    version("1.2.2", sha256="c51b903ea5a046cb9b545b5c04fd28647c58b4ab6182e61710f0287846350ef8")
+    version("2.1.0", sha256="fa7df4a82dae269ffb347b9007376fb0d9979c17c4974814ea82204b12d70ea5")
 
     depends_on("w3emc")
 
