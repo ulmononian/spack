@@ -58,12 +58,7 @@ class Mysql(CMakePackage):
         multi=False,
         description="Use the specified C++ standard when building.",
     )
-    variant(
-        "download_boost",
-        default=False,
-        description="Download own boost libs",
-        when="@5.7:",
-    )
+    variant("download_boost", default=False, description="Download own boost libs", when="@5.7:")
 
     # 5.7.X cannot be compiled client-only.
     conflicts("+client_only", when="@5.7.0:5.7")
@@ -173,7 +168,9 @@ class Mysql(CMakePackage):
             options.append("-DBOOST_ROOT={0}".format(spec["boost"].prefix))
             options.append("-DWITH_BOOST={0}".format(spec["boost"].prefix))
         if spec.satisfies("+download_boost"):
-            options.append("-DWITH_BOOST={0}".format(os.path.join(self.build_directory, "boostdir")))
+            options.append(
+                "-DWITH_BOOST={0}".format(os.path.join(self.build_directory, "boostdir"))
+            )
             options.append("-DDOWNLOAD_BOOST=1")
         if "+client_only" in self.spec:
             options.append("-DWITHOUT_SERVER:BOOL=ON")
