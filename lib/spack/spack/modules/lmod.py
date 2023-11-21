@@ -326,7 +326,7 @@ class LmodFileLayout(BaseFileLayout):
         # we need to append a hash to the version to distinguish
         # among flavors of the same library (e.g. openblas~openmp vs.
         # openblas+openmp)
-        path = path_part_fmt.format(token=value)
+        path = path_part_fmt(token=value)
 
         # Use the hash length that the user specied, not something else
         if get_hash_length() > 0:
