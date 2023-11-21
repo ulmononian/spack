@@ -230,12 +230,11 @@ class Cdo(AutotoolsPackage):
             config_args.append("--without-netcdf")
 
         if self.spec.variants["grib2"].value == "eccodes":
+            config_args.append("--without-grib_api")
             eccodes_spec = self.spec["eccodes"]
             if self.spec.satisfies("@1.9:") and eccodes_spec.satisfies("+shared"):
                 config_args.append("--with-eccodes=" + yes_or_prefix("eccodes"))
-                config_args.append("--without-grib_api")
             else:
-                config_args.append("--with-grib_api=yes")
                 eccodes_libs = eccodes_spec.libs
                 flags["LIBS"].append(eccodes_libs.link_flags)
                 if not is_system_path(eccodes_spec.prefix):
