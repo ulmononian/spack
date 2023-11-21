@@ -71,7 +71,11 @@ class Gmake(Package, GNUMirrorPackage):
 
     def install(self, spec, prefix):
         configure = Executable(join_path(self.stage.source_path, "configure"))
-        build_sh = Executable(join_path(self.stage.source_path, "build.sh"))
+        if self.spec.satisfies("@4.3"):
+            build_sh_dir = self.stage.source_path
+        else:
+            build_sh_dir = "./"
+        build_sh = Executable(join_path(build_sh_dir, "build.sh"))
         with working_dir(self.build_directory, create=True):
             configure(f"--prefix={prefix}", *self.configure_args())
             build_sh()
