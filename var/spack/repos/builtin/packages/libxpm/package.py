@@ -38,5 +38,5 @@ class Libxpm(AutotoolsPackage, XorgPackage):
             libs += " " + self.spec["gettext"].libs.link_flags
             libs += " " + self.spec["iconv"].libs.search_flags
             libs += " " + self.spec["iconv"].libs.link_flags
-        args.append(f"LIBS={libs}")
+            args.append(f"LIBS={libs}")
         return args
