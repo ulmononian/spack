@@ -177,6 +177,7 @@ class Mysql(CMakePackage):
         options.append("-DWITH_EDITLINE=system")
         options.append("-Dlibedit_INCLUDE_DIR={0}".format(spec["libedit"].prefix.include))
         options.append("-Dlibedit_LIBRARY={0}".format(spec["libedit"].libs.directories[0]))
+        options.append("-DFORCE_UNSUPPORTED_COMPILER=ON")
         return options
 
     def _fix_dtrace_shebang(self, env):
