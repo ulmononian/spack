@@ -25,9 +25,6 @@ class ProdUtil(CMakePackage):
 
     depends_on("w3emc")
 
-    if sys.platform == "darwin":
-        patch("darwin/apple-clang-13.0.0-stdlib.patch")
-
     def check(self):
         with working_dir(self.builder.build_directory):
             make("test")
