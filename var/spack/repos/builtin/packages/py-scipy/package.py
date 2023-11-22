@@ -214,31 +214,6 @@ class PyScipy(PythonPackage):
         if self.spec.satisfies("%apple-clang@15:"):
             env.append_flags("LDFLAGS", "-Wl,-ld_classic")
 
-        args = [
-            "setup",
-            "build",
-            "-Dblas=" + blas,
-            "-Dlapack=" + lapack,
-            "--prefix=" + join_path(os.getcwd(), "build-install"),
-            "-Ddebug=false",
-            "-Doptimization=2",
-        ]
-        meson = which("meson")
-        meson(*args)
-        args = [
-            "-m",
-            "build",
-            "--wheel",
-            "-Cbuilddir=build",
-            "--no-isolation",
-            "--skip-dependency-check",
-            "-Ccompile-args=-j%s" % make_jobs,
-            ".",
-        ]
-        python(*args)
-        args = std_pip_args + ["--prefix=" + prefix, glob.glob(join_path("dist", "scipy*.whl"))[0]]
-        pip(*args)
-
     @when("@1.9:")
     def config_settings(self, spec, prefix):
         blas, lapack = self.spec["py-numpy"].package.blas_lapack_pkg_config()
