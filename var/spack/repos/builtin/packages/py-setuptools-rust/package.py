@@ -18,13 +18,16 @@ class PySetuptoolsRust(PythonPackage):
     version("1.2.0", sha256="0a4ada479e8c7e3d8bd7cb56e1a29acc2b2bb98c2325051b0cdcb57d7f056de8")
     version("0.12.1", sha256="647009e924f0ae439c7f3e0141a184a69ad247ecb9044c511dabde232d3d570e")
 
+    variant("rust_bootstrap", default=False, description="Use prebuilt Rust")
+
     depends_on("py-setuptools@62.4:", when="@1.4.0:", type=("build", "run"))
     depends_on("py-setuptools@46.1:", type=("build", "run"))
     depends_on("py-setuptools", type=("build", "run"))
     depends_on("py-semantic-version@2.8.2:2", when="@1.2.0:", type=("build", "run"))
     depends_on("py-semantic-version@2.6.0:", type=("build", "run"))
     depends_on("py-typing-extensions@3.7.4.3:", when="@1.2.0:", type=("build", "run"))
-    depends_on("rust", type="run")
+    depends_on("rust", when="~rust_bootstrap", type="run")
+    depends_on("rust-bootstrap", when="+rust_bootstrap", type="run")
 
     # Historical dependencies
     depends_on("py-setuptools-scm+toml@6.3.2:", when="@1.2.0:1.4.1", type="build")
