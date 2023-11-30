@@ -90,13 +90,6 @@ class HdfEos2(AutotoolsPackage):
         if not self.force_autoreconf:
             chmod(join_path(self.stage.source_path, "configure"), 0o755)
 
-    def flag_handler(self, name, flags):
-        if self.spec.compiler.name == "apple-clang":
-            if name == "cflags":
-                flags.append("-Wno-error=implicit-function-declaration")
-
-        return flags, None, None
-
     def configure_args(self):
         extra_args = []
 
