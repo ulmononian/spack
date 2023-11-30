@@ -120,4 +120,8 @@ class HdfEos2(AutotoolsPackage):
         if "zlib" in self.spec:
             extra_args.append("--with-zlib={0}".format(self.spec["zlib-api"].prefix))
 
+        # https://forum.hdfgroup.org/t/help-building-hdf4-with-clang-error-implicit-declaration-of-function-test-mgr-szip-is-invalid-in-c99/7680
+        if self.spec.satisfies("%apple-clang"):
+            extra_args.append("CFLAGS=-Wno-error=implicit-function-declaration")
+
         return extra_args
