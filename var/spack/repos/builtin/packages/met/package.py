@@ -52,7 +52,7 @@ class Met(AutotoolsPackage):
     depends_on("cairo", when="+graphics")
     depends_on("freetype", when="+graphics")
 
-    depends_on("python@3.6.3:", when="+python", type=("build", "run"))
+    depends_on("python@3.6.3:", when="+python")
     depends_on("py-netcdf4", when="+python", type=("build", "run"))
     depends_on("py-numpy", when="+python", type=("build", "run"))
     depends_on("py-xarray", when="+python", type=("build", "run"))
