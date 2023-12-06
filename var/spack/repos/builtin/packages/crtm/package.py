@@ -74,7 +74,8 @@ class Crtm(CMakePackage):
         else:
             return "https://github.com/JCSDA/crtm/archive/refs/tags/{}.tar.gz".format(version)
 
-    @when("@2.4.0.1 %gcc")
+    @when("@2.4.0.1")
     def patch(self):
-        # Line lengths in RSS_Emissivity_Model.f90 are too long for gfortran default limit
-        filter_file("-fbacktrace", "-fbacktrace -ffree-line-length-none", "libsrc/CMakeLists.txt")
+        if self.compiler.fc == "gfortran":
+            # Line lengths in RSS_Emissivity_Model.f90 are too long for gfortran default limit
+            filter_file("-fbacktrace", "-fbacktrace -ffree-line-length-none", "libsrc/CMakeLists.txt")
