@@ -717,21 +717,26 @@ def setup_meta_modules():
 
     for compiler_name in compiler_dict.keys():
         for compiler_version in compiler_dict[compiler_name]:
-            if not compiler_name in python_dict.keys() or \
-                    not compiler_version in python_dict[compiler_name].keys():
+            if (
+                not compiler_name in python_dict.keys()
+                or not compiler_version in python_dict[compiler_name].keys()
+            ):
                 user_input = input(
                     f"No Python version found for compiler {compiler_name}@{compiler_version}, proceed without creating Python modules? (yes/no): "
-                    )
+                )
                 if not user_input.lower() in ["yes", "y"]:
-                    raise Exception(f"No Python version found for compiler {compiler_name}@{compiler_version}.")
+                    raise Exception(
+                        f"No Python version found for compiler {compiler_name}@{compiler_version}."
+                    )
                 else:
                     continue
             spec = python_dict[compiler_name][compiler_version]
             python_version = str(spec.version)
             logging.info(
                 "  ... configuring stack python interpreter {}@{} for compiler {}@{}".format(
-                    python_name, python_version, compiler_name, compiler_version)
+                    python_name, python_version, compiler_name, compiler_version
                 )
+            )
 
             if spec.external:
                 logging.debug(f"  ... using external python version {python_version}")
