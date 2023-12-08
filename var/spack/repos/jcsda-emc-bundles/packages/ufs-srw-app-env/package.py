@@ -27,7 +27,7 @@ class UfsSrwAppEnv(BundlePackage):
     depends_on("esmf")
     depends_on("fms@2023.04")
     depends_on("bacio")
-    depends_on("crtm@2.4.0")
+    depends_on("crtm@2.4.0.1")
     depends_on("g2")
     depends_on("g2tmpl")
     depends_on("ip")
