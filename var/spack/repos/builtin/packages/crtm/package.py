@@ -78,4 +78,6 @@ class Crtm(CMakePackage):
     def patch(self):
         if self.compiler.name in ["gcc", "clang", "apple-clang"]:
             # Line lengths in RSS_Emissivity_Model.f90 are too long for gfortran default limit
-            filter_file("-fbacktrace", "-fbacktrace -ffree-line-length-none", "libsrc/CMakeLists.txt")
+            filter_file(
+                "-fbacktrace", "-fbacktrace -ffree-line-length-none", "libsrc/CMakeLists.txt"
+            )
