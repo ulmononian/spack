@@ -19,7 +19,7 @@ class EwokEnv(BundlePackage):
 
     # Variants for workflow engines
     variant("ecflow", default=True, description="Use ecflow workflow engine")
-    variant("cylc", default=False, description="Use cylc workflow engine"
+    variant("cylc", default=False, description="Use cylc workflow engine")
 
     # Variants defining repositories that are not yet publicly available
     variant("solo", default=False, description="Build solo (general tools for Python programmers)")
