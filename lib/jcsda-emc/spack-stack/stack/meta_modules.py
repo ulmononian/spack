@@ -304,11 +304,7 @@ def setup_meta_modules():
     # Then, check for mpi providers - recursively for compilers
     mpi_dict = get_matched_dict(module_dir, mpi_candidate_list, compiler_candidate_list)
     if not mpi_dict:
-        user_input = input(
-            "No matching MPI providers found, proceed without creating MPI module hierarchy? (yes/no): "
-        )
-        if not user_input.lower() in ["yes", "y"]:
-            raise Exception("No matching MPI providers found")
+        logging.warn("No matching MPI providers found, skipping MPI module hierarchy")
     else:
         logging.info(" ... stack mpi providers: '{}'".format(mpi_dict))
 
@@ -721,15 +717,8 @@ def setup_meta_modules():
                 not compiler_name in python_dict.keys()
                 or not compiler_version in python_dict[compiler_name].keys()
             ):
-                user_input = input(
-                    f"No Python version found for compiler {compiler_name}@{compiler_version}, proceed without creating Python modules? (yes/no): "
-                )
-                if not user_input.lower() in ["yes", "y"]:
-                    raise Exception(
-                        f"No Python version found for compiler {compiler_name}@{compiler_version}."
-                    )
-                else:
-                    continue
+                logging.warn("No Python version found for compiler {compiler_name}@{compiler_version}, skipping Python modules")
+                continue
             spec = python_dict[compiler_name][compiler_version]
             python_version = str(spec.version)
             logging.info(
