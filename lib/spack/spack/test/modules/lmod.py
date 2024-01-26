@@ -78,25 +78,15 @@ class TestLmod:
         else:
             assert compiler.replace("@=", "/") in layout.available_path_parts
 
-        # Check that the provider part has a hash that matches the
-        # hash_length in the configuration file
-        hash_length = spack.modules.lmod.get_hash_length()
+        # Check that the provider part instead has always an hash even if
+        # hash has been disallowed in the configuration file
         path_parts = layout.available_path_parts
         service_part = spec_string.replace("@", "/")
-        if hash_length > 0:
-            service_part = "-".join([service_part, layout.spec.dag_hash(length=hash_length)])
+        service_part = "-".join([service_part, layout.spec.dag_hash(length=7)])
 
         if "mpileaks" in spec_string:
             # It's a user, not a provider, so create the provider string
-            # DH* 20230710
-            # original spack code:
-            # service_part = layout.spec["mpi"].format("{name}/{version}-{hash:7}")
-            if hash_length > 0:
-                short_hash = hash[:hash_length]  # noqa: F841
-                service_part = layout.spec["mpi"].format("{name}/{version}-{short_hash}")
-            else:
-                service_part = layout.spec["mpi"].format("{name}/{version}")
-            # *DH 20230710
+            service_part = layout.spec["mpi"].format("{name}/{version}-{hash:7}")
         else:
             # Only relevant for providers, not users, of virtuals
             assert service_part in path_parts
@@ -272,7 +262,9 @@ class TestLmod:
         path = module.layout.filename
         mpi_spec = spec["mpi"]
 
-        mpi_element = "{0}/{1}/".format(mpi_spec.name, mpi_spec.version)
+        mpi_element = "{0}/{1}-{2}/".format(
+            mpi_spec.name, mpi_spec.version, mpi_spec.dag_hash(length=7)
+        )
 
         assert mpi_element in path
 
