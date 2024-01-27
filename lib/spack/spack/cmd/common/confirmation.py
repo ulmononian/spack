@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Copyright 2013-2023 Lawrence Livermore National Security, LLC and other
-=======
 # Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -25,18 +21,11 @@ def confirm_action(specs: List[spack.spec.Spec], participle: str, noun: str):
         participle: action expressed as a participle, e.g. "uninstalled"
         noun: action expressed as a noun, e.g. "uninstallation"
     """
-<<<<<<< HEAD
-    tty.msg(f"The following {len(specs)} packages will be {participle}:\n")
-    spack.cmd.display_specs(specs, **display_args)
-    print("")
-    answer = tty.get_yes_or_no("Do you want to proceed?", default=False)
-=======
     spack.cmd.display_specs(specs, **display_args)
     print()
     answer = tty.get_yes_or_no(
         f"{len(specs)} packages will be {participle}. Do you want to proceed?", default=False
     )
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
     if not answer:
         tty.msg(f"Aborting {noun}")
         sys.exit(0)

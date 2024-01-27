@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-.. Copyright 2013-2023 Lawrence Livermore National Security, LLC and other
-=======
 .. Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
    Spack Project Developers. See the top-level COPYRIGHT file for details.
 
    SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -101,8 +97,6 @@ Each package version and compiler listed in an external should
 have entries in Spack's packages and compiler configuration, even
 though the package and compiler may not ever be built.
 
-<<<<<<< HEAD
-=======
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Extra attributes for external packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -132,7 +126,6 @@ follows:
 See :ref:`configuration_environment_variables` for more information on
 how to configure environment modifications in Spack config files.
 
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prevent packages from being built from sources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -419,9 +412,6 @@ like this:
 
 which means every spec will be required to use ``clang`` as a compiler.
 
-<<<<<<< HEAD
-Note that in this case ``all`` represents a *default set of requirements* -
-=======
 Requirements on variants for all packages are possible too, but note that they
 are only enforced for those packages that define these variants, otherwise they
 are disregarded. For example:
@@ -449,7 +439,6 @@ the default requirement will be enforced only if a package has both a ``cuda`` a
 a ``shared`` variant, and will never be partially enforced.
 
 Finally, ``all`` represents a *default set of requirements* -
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 if there are specific package requirements, then the default requirements
 under ``all`` are disregarded. For example, with a configuration like this:
 
@@ -457,14 +446,6 @@ under ``all`` are disregarded. For example, with a configuration like this:
 
    packages:
      all:
-<<<<<<< HEAD
-       require: '%clang'
-     cmake:
-       require: '%gcc'
-
-Spack requires ``cmake`` to use ``gcc`` and all other nodes (including ``cmake``
-dependencies) to use ``clang``.
-=======
        require:
        - 'build_type=Debug'
        - '%clang'
@@ -477,7 +458,6 @@ Spack requires ``cmake`` to use ``gcc`` and all other nodes (including ``cmake``
 dependencies) to use ``clang``. If enforcing ``build_type=Debug`` is needed also
 on ``cmake``, it must be repeated in the specific ``cmake`` requirements.
 
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Setting requirements on virtual specs
@@ -507,8 +487,6 @@ present. For instance with a configuration like:
 
 you will use ``mvapich2~cuda %gcc`` as an ``mpi`` provider.
 
-<<<<<<< HEAD
-=======
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Conflicts and strong preferences
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -559,7 +537,6 @@ The ``spec`` attribute is mandatory, while both ``when`` and ``message`` are opt
 
 
 
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 .. _package-preferences:
 
 -------------------
