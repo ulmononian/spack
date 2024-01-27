@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Copyright 2013-2023 Lawrence Livermore National Security, LLC and other
-=======
 # Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -14,17 +10,10 @@ from typing import List
 import llnl.util.tty as tty
 
 import spack.cmd
-<<<<<<< HEAD
-import spack.cmd.common.arguments as arguments
-import spack.cmd.common.confirmation as confirmation
-import spack.environment as ev
-import spack.spec
-=======
 import spack.cmd.common.confirmation as confirmation
 import spack.environment as ev
 import spack.spec
 from spack.cmd.common import arguments
->>>>>>> 29d784e5fa4651e3a47af766057ebc06ee558420
 
 description = "remove specs from the concretized lockfile of an environment"
 section = "environments"
