@@ -22,4 +22,3 @@ class PyMetomiIsodatetime(PythonPackage):
 
     def url_for_version(self, version):
         return f"https://files.pythonhosted.org/packages/source/m/metomi-isodatetime/metomi-isodatetime-1!{version}.tar.gz"
-
