@@ -41,7 +41,10 @@ class Nco(AutotoolsPackage):
     patch("NUL-0-NULL.patch", when="@:4.6.7")
 
     # https://github.com/nco/nco/issues/244
-    patch("nco-5_0_1-intel-omp.patch", when="@5: %intel")
+    patch("nco-5_0_1-intel-omp.patch", when="@5.0.1 %intel")
+
+    # Similar but not the same as above
+    patch("nco-5_1_6-intel-omp.patch", when="@5.1.6 %intel")
 
     variant("doc", default=False, description="Build/install NCO TexInfo-based documentation")
 
@@ -57,6 +60,9 @@ class Nco(AutotoolsPackage):
     depends_on("texinfo@4.12:", type="build", when="+doc")
 
     conflicts("%gcc@9:", when="@:4.7.8")
+
+    # Only patched 5.0.1 and 5.1.6 for Intel
+    conflicts("%intel", when="@5.0.2:5.1.5")
 
     def configure_args(self):
         config_args = []
