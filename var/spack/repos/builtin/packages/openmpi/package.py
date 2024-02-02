@@ -422,7 +422,9 @@ class Openmpi(AutotoolsPackage, CudaPackage):
 
     # Patch to allow two-level namespace on a MacOS platform when building
     # openmpi. Unfortuntately, the openmpi configure command has flat namespace
-    # hardwired in.
+    # hardwired in. In spack, this only works for openmpi up to versions 4,
+    # because for versions 5+ autoreconf is triggered (see below) and this
+    # patch needs to be applied (again) AFTER autoreconf ran.
     def patch(self):
         spec = self.spec
         if "+two_level_namespace" in spec and spec.satisfies("platform=darwin"):
@@ -952,6 +954,9 @@ with '-Wl,-commons,use_dylibs' and without
     def autoreconf(self, spec, prefix):
         perl = which("perl")
         perl("autogen.pl", "--force")
+        if "+two_level_namespace" in spec and spec.satisfies("platform=darwin"):
+            print("Re-applying configure patch for two_level_namespace on MacOS after autoreconf")
+            filter_file(r"-flat_namespace", "-commons,use_dylibs", "configure")
 
     def configure_args(self):
         spec = self.spec
