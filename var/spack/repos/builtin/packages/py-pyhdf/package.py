@@ -26,7 +26,7 @@ class PyPyhdf(PythonPackage):
     depends_on("python@3.2:", type=("build", "run"))
 
     # Dependencies
-    depends_on("zlib", type=("build", "run"))
+    depends_on("zlib-api", type=("build", "run"))
     depends_on("hdf", type=("build", "run"))
     depends_on("py-numpy", type=("build", "run"))
     depends_on("jpeg", type=("build", "run"))
