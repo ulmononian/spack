@@ -43,4 +43,5 @@ class AwscliV2(PythonPackage):
         if self.spec.satisfies("~examples"):
             examples_dir = join_path(python_purelib, "awscli", "examples")
             remove_directory_contents(examples_dir)
+
     # *DH
