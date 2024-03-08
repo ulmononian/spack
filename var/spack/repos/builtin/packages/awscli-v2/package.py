@@ -32,8 +32,16 @@ class AwscliV2(PythonPackage):
 
     variant("examples", default=True, description="Install code examples")
 
+    # DH* 20240307 - temporary change until spack core updates are merged into our fork
+    # @run_after("install")
+    # @when("~examples")
+    # def post_install(self):
+    #     examples_dir = join_path(python_purelib, "awscli", "examples")
+    #     remove_directory_contents(examples_dir)
     @run_after("install")
-    @when("~examples")
     def post_install(self):
-        examples_dir = join_path(python_purelib, "awscli", "examples")
-        remove_directory_contents(examples_dir)
+        if self.spec.satisfies("~examples"):
+            examples_dir = join_path(python_purelib, "awscli", "examples")
+            remove_directory_contents(examples_dir)
+
+    # *DH
