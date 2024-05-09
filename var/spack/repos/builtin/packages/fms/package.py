@@ -109,6 +109,12 @@ class Fms(CMakePackage):
         description="Compiles with support for deprecated io modules fms_io and mpp_io",
         when="@2023.02:",
     )
+    variant("large_file", default=False, description="Enable compiler definition -Duse_LARGEFILE.")
+    variant(
+        "internal_file_nml",
+        default=True,
+        description="Enable compiler definition -DINTERNAL_FILE_NML.",
+    )
 
     depends_on("netcdf-c")
     depends_on("netcdf-fortran")
@@ -128,25 +134,30 @@ class Fms(CMakePackage):
             self.define_from_variant("ENABLE_QUAD_PRECISION", "quad_precision"),
             self.define_from_variant("WITH_YAML", "yaml"),
             self.define_from_variant("CONSTANTS"),
+            self.define_from_variant("LARGEFILE", "large_file"),
+            self.define_from_variant("INTERNAL_FILE_NML"),
             self.define("32BIT", "precision=32" in self.spec),
             self.define("64BIT", "precision=64" in self.spec),
             self.define_from_variant("FPIC", "pic"),
             self.define_from_variant("USE_DEPRECATED_IO", "deprecated_io"),
         ]
 
-        fflags = []
+        # DH* 20220602
+        if self.spec.satisfies("@release-jcsda"):
+            fflags = []
 
-        if self.compiler.name in ["gcc", "clang", "apple-clang"]:
-            gfortran_major_version = int(
-                spack.compiler.get_compiler_version_output(self.compiler.fc, "-dumpversion").split(
-                    "."
-                )[0]
-            )
+            if self.compiler.name in ["gcc", "clang", "apple-clang"]:
+                gfortran_major_version = int(
+                    spack.compiler.get_compiler_version_output(self.compiler.fc, "-dumpversion").split(
+                        "."
+                    )[0]
+                )
 
-            if gfortran_major_version >= 10:
-                fflags.append("-fallow-argument-mismatch")
+                if gfortran_major_version >= 10:
+                    fflags.append("-fallow-argument-mismatch")
 
-        if fflags:
-            args.append(self.define("CMAKE_Fortran_FLAGS", " ".join(fflags)))
+            if fflags:
+                args.append(self.define("CMAKE_Fortran_FLAGS", " ".join(fflags)))
+        # *DH 20220602
 
         return args

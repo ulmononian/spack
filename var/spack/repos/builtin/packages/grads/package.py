@@ -81,6 +81,16 @@ class Grads(AutotoolsPackage):
             url = "ftp://cola.gmu.edu/grads/{}/grads-{}-src.tar.gz"
             return url.format(version.up_to(2), version)
 
+    # Name of grib2 C library has changed in recent versions
+    def patch(self):
+        if self.spec.satisfies("@:2.2.2"):
+            filter_file("png15", "png", "configure")
+
+        if self.spec.satisfies("+grib2"):
+            filter_file("grib2c", "g2c", "configure")
+            if self.spec.satisfies("^g2c@1.8.0:"):
+                filter_file("G2_VERSION", "G2C_VERSION", "src/gacfg.c")
+
     def setup_build_environment(self, env):
         spec = self.spec
         libs = []
