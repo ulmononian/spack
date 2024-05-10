@@ -91,7 +91,8 @@ def _format_env_var_name(spec, var_name_fmt, uppercase=True):
     fmt_parts = _FORMAT_STRING_RE.split(var_name_fmt)
     if uppercase:
         return "".join(
-            spec.format(part).upper() if _FORMAT_STRING_RE.match(part) else part for part in fmt_parts  # noqa: E501
+            spec.format(part).upper() if _FORMAT_STRING_RE.match(part) else part
+            for part in fmt_parts
         )
     else:
         return "".join(
