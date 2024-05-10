@@ -128,8 +128,7 @@ class UfsWeatherModel(CMakePackage):
     depends_on("crtm", when="@develop")
     depends_on("esmf", when="@develop")
     depends_on("esmf+debug", when="+debug")
-    depends_on("fms", when="@develop")
-    depends_on("fms constants=GFS", when="@develop ^fms@2022.02:")
+    depends_on("fms@2022.02: constants=GFS", when="@develop")
     depends_on("g2", when="@develop")
     depends_on("g2tmpl", when="@develop")
     depends_on("hdf5+hl+mpi", when="@develop")
@@ -138,14 +137,16 @@ class UfsWeatherModel(CMakePackage):
     depends_on("parallelio+fortran~pnetcdf~shared", when="@develop")
     with when("@develop app=S2SA"):
         depends_on("mapl")
+        depends_on("mapl+debug", when="+debug")
         depends_on("gftl-shared")
     with when("@develop app=S2SWA"):
         depends_on("mapl")
+        depends_on("mapl+debug", when="+debug")
         depends_on("gftl-shared")
     with when("@develop app=ATMAERO"):
         depends_on("mapl")
+        depends_on("mapl+debug", when="+debug")
         depends_on("gftl-shared")
-    depends_on("mapl+debug", when="+debug ^mapl")
 
     conflicts("%gcc@:8", when="@develop")
 
