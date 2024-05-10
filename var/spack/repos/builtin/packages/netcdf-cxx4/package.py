@@ -29,10 +29,10 @@ class NetcdfCxx4(CMakePackage):
 
     # Too many problems with the new cmake build of netcdf-c
     # https://github.com/spack/spack/issues/43502
-    ## If another cmake-built netcdf-c exists outside of spack  e.g., homebrew's libnetcdf,
-    ## then cmake will choose that external netcdf-c.
-    ## This approach ensures the config.cmake exists, and thus ensures the spack version is
-    ##  found before the system's
+    # If another cmake-built netcdf-c exists outside of spack  e.g., homebrew's libnetcdf,
+    # then cmake will choose that external netcdf-c.
+    # This approach ensures the config.cmake exists, and thus ensures the spack version is
+    #  found before the system's
     # depends_on("netcdf-c build_system=cmake")
     depends_on("netcdf-c")
     depends_on("hdf5")

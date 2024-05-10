@@ -91,12 +91,13 @@ def _format_env_var_name(spec, var_name_fmt, uppercase=True):
     fmt_parts = _FORMAT_STRING_RE.split(var_name_fmt)
     if uppercase:
         return "".join(
-            spec.format(part).upper() if _FORMAT_STRING_RE.match(part) else part for part in fmt_parts
+            spec.format(part).upper() if _FORMAT_STRING_RE.match(part) else part for part in fmt_parts  # noqa: E501
         )
     else:
         return "".join(
             spec.format(part) if _FORMAT_STRING_RE.match(part) else part for part in fmt_parts
         )
+
 
 def _check_tokens_are_valid(format_string, message):
     """Checks that the tokens used in the format string are valid in
