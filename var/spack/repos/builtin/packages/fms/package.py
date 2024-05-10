@@ -148,9 +148,9 @@ class Fms(CMakePackage):
 
             if self.compiler.name in ["gcc", "clang", "apple-clang"]:
                 gfortran_major_version = int(
-                    spack.compiler.get_compiler_version_output(self.compiler.fc, "-dumpversion").split(
-                        "."
-                    )[0]
+                    spack.compiler.get_compiler_version_output(
+                        self.compiler.fc, "-dumpversion"
+                    ).split(".")[0]
                 )
 
                 if gfortran_major_version >= 10:
