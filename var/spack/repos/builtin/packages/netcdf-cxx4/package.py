@@ -3,6 +3,7 @@
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
+import os
 from spack.package import *
 
 
@@ -26,11 +27,14 @@ class NetcdfCxx4(CMakePackage):
     variant("doc", default=False, description="Enable doxygen docs")
     variant("tests", default=False, description="Enable CTest-based tests, dashboards.")
 
-    # If another cmake-built netcdf-c exists outside of spack  e.g., homebrew's libnetcdf,
-    # then cmake will choose that external netcdf-c.
-    # This approach ensures the config.cmake exists, and thus ensures the spack version is
-    #  found before the system's
-    depends_on("netcdf-c build_system=cmake")
+    # Too many problems with the new cmake build of netcdf-c
+    # https://github.com/spack/spack/issues/43502
+    ## If another cmake-built netcdf-c exists outside of spack  e.g., homebrew's libnetcdf,
+    ## then cmake will choose that external netcdf-c.
+    ## This approach ensures the config.cmake exists, and thus ensures the spack version is
+    ##  found before the system's
+    #depends_on("netcdf-c build_system=cmake")
+    depends_on("netcdf-c")
     depends_on("hdf5")
 
     # if we link against an mpi-aware hdf5 then this needs to also be mpi aware for tests
@@ -89,3 +93,12 @@ class NetcdfCxx4(CMakePackage):
     def check(self):
         with working_dir(self.build_directory):
             make("test", parallel=False)
+
+    # https://github.com/spack/spack/issues/44122
+    @run_after("install")
+    @when("@:4.3.1")
+    def post_install(self):
+        with working_dir(self.prefix.lib):
+            libname_cmake = f"libnetcdf-cxx4.{dso_suffix}"
+            libname_autotools = f"libnetcdf_c++4.{dso_suffix}"
+            os.symlink(libname_cmake, libname_autotools)
