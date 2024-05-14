@@ -90,21 +90,7 @@ class GobjectIntrospection(MesonPackage, AutotoolsPackage):
         url = "https://download.gnome.org/sources/gobject-introspection/{0}/gobject-introspection-{1}.tar.xz"
         return url.format(version.up_to(2), version)
 
-    def setup_build_environment(self, env):
-        # Only needed for sbang.patch above
-        if self.spec.satisfies("@:1.60"):
-            env.set("SPACK_SBANG", sbang.sbang_install_path())
-
-        if self.spec.satisfies("^cairo ~shared"):
-            pkgconfig = which("pkg-config")
-            cairo_libs = pkgconfig("cairo", "--static", "--libs", output=str).strip()
-            env.set("CFLAGS", cairo_libs)
-
     def setup_run_environment(self, env):
-        env.prepend_path("GI_TYPELIB_PATH", join_path(self.prefix.lib, "girepository-1.0"))
-
-    def setup_dependent_build_environment(self, env, dependent_spec):
-        env.prepend_path("XDG_DATA_DIRS", self.prefix.share)
         env.prepend_path("GI_TYPELIB_PATH", join_path(self.prefix.lib, "girepository-1.0"))
 
     def setup_dependent_run_environment(self, env, dependent_spec):
@@ -122,6 +108,20 @@ class AutotoolsBuilderPackage(spack.build_systems.autotools.AutotoolsBuilder):
         # we need to filter this file to avoid an overly long hashbang line
         filter_file("#!/usr/bin/env @PYTHON@", "#!@PYTHON@", "tools/g-ir-tool-template.in")
 
+    def setup_build_environment(self, env):
+        # Only needed for sbang.patch above
+        if self.spec.satisfies("@:1.60"):
+            env.set("SPACK_SBANG", sbang.sbang_install_path())
+
+        if self.spec.satisfies("^cairo ~shared"):
+            pkgconfig = which("pkg-config")
+            cairo_libs = pkgconfig("cairo", "--static", "--libs", output=str).strip()
+            env.set("CFLAGS", cairo_libs)
+
+    def setup_dependent_build_environment(self, env, dependent_spec):
+        env.prepend_path("XDG_DATA_DIRS", self.prefix.share)
+        env.prepend_path("GI_TYPELIB_PATH", join_path(self.prefix.lib, "girepository-1.0"))
+
 
 class MesonBuilder(spack.build_systems.meson.MesonBuilder):
     def meson_args(self):
@@ -131,3 +131,17 @@ class MesonBuilder(spack.build_systems.meson.MesonBuilder):
             cairo_libs = pkgconfig("cairo", "--static", "--libs", output=str).strip()
             args.append(f"-Dc_link_args={cairo_libs}")
         return args
+
+    def setup_build_environment(self, env):
+        # Only needed for sbang.patch above
+        if self.spec.satisfies("@:1.60"):
+            env.set("SPACK_SBANG", sbang.sbang_install_path())
+
+        if self.spec.satisfies("^cairo ~shared"):
+            pkgconfig = which("pkg-config")
+            cairo_libs = pkgconfig("cairo", "--static", "--libs", output=str).strip()
+            env.set("CFLAGS", cairo_libs)
+
+    def setup_dependent_build_environment(self, env, dependent_spec):
+        env.prepend_path("XDG_DATA_DIRS", self.prefix.share)
+        env.prepend_path("GI_TYPELIB_PATH", join_path(self.prefix.lib, "girepository-1.0"))
