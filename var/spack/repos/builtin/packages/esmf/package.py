@@ -113,6 +113,8 @@ class Esmf(MakefilePackage):
     # Testing dependencies
     depends_on("perl", type="test")
 
+    conflicts("%aocc", when="@:8.3")
+
     # Make esmf build with newer intel versions
     patch("intel.patch", when="@:7.0 %intel@17:")
     # Make esmf build with newer gcc versions
@@ -241,6 +243,8 @@ class Esmf(MakefilePackage):
             env.set("ESMF_COMPILER", "nvhpc")
         elif self.compiler.name == "cce":
             env.set("ESMF_COMPILER", "cce")
+        elif self.compiler.name == "aocc":
+            env.set("ESMF_COMPILER", "aocc")
         else:
             msg = "The compiler you are building with, "
             msg += '"{0}", is not supported by ESMF.'

@@ -55,10 +55,6 @@ class Lz4(CMakePackage, MakefilePackage):
         else:
             return "{0}/r{1}.tar.gz".format(url, version.joined)
 
-    def setup_build_environment(self, env):
-        if self.spec.satisfies("+pic"):
-            env.set("CFLAGS", "-fPIC")
-
     def patch(self):
         # Remove flags not recognized by the NVIDIA compiler
         if self.spec.satisfies("%nvhpc@:20.11"):
@@ -86,6 +82,10 @@ class CMakeBuilder(CMakeBuilder):
         )
         args.append(self.define_from_variant("CMAKE_POSITION_INDEPENDENT_CODE", "pic"))
         return args
+
+    def setup_build_environment(self, env):
+        if self.spec.satisfies("+pic"):
+            env.set("CFLAGS", self.pkg.compiler.cc_pic_flag)
 
 
 class MakefileBuilder(MakefileBuilder):

@@ -47,6 +47,12 @@ class NetcdfFortran(AutotoolsPackage):
         depends_on("mpi", when="^netcdf-c+parallel-netcdf")
         depends_on("mpi", when="^hdf5+mpi~shared")
 
+    # We need to use MPI wrappers when building against static MPI-enabled NetCDF and/or HDF5:
+    with when("^netcdf-c~shared"):
+        depends_on("mpi", when="^netcdf-c+mpi")
+        depends_on("mpi", when="^netcdf-c+parallel-netcdf")
+        depends_on("mpi", when="^hdf5+mpi~shared")
+
     # Enable 'make check' for NAG, which is too strict.
     patch("nag_testing.patch", when="@4.4.5%nag")
 
@@ -141,8 +147,6 @@ class NetcdfFortran(AutotoolsPackage):
             config_args.append("LIBS={0}".format(nc_config("--libs", output=str).strip()))
             if any(s in netcdf_c_spec for s in ["+mpi", "+parallel-netcdf", "^hdf5+mpi~shared"]):
                 config_args.append("CC=%s" % self.spec["mpi"].mpicc)
-                config_args.append("FC=%s" % self.spec["mpi"].mpifc)
-                config_args.append("F77=%s" % self.spec["mpi"].mpif77)
 
         return config_args
 
