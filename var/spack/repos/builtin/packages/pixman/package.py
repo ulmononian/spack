@@ -88,4 +88,8 @@ class Pixman(AutotoolsPackage):
                 "LIBS=%s" % which("libpng-config")("--static", "--ldflags", output=str).strip()
             )
 
+        # The Fujitsu compiler does not support assembler macros.
+        if self.spec.satisfies("%fj"):
+            args.append("--disable-arm-a64-neon")
+
         return args

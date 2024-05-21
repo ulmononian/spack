@@ -41,7 +41,7 @@ class Scotch(CMakePackage, MakefilePackage):
     variant("threads", default=True, description="use POSIX Pthreads within Scotch and PT-Scotch")
     variant(
         "mpi_thread",
-        default=True,
+        default=False,
         description="use multi-threaded algorithms in conjunction with MPI",
     )
     variant("mpi", default=True, description="Compile parallel libraries")
@@ -75,7 +75,7 @@ class Scotch(CMakePackage, MakefilePackage):
     patch("libscotch-scotcherr-link-7.0.1.patch", when="@7.0.1 +link_error_lib")
 
     # Avoid OpenMPI segfaults by using MPI_Comm_F2C for parmetis communicator
-    patch("parmetis-mpi.patch", when="@6.1.1:7.0.3 ^openmpi")
+    patch("parmetis-mpi.patch", when="@6.1.1:7.0.3 +metis ^openmpi")
 
     # Vendored dependency of METIS/ParMETIS conflicts with standard
     # installations

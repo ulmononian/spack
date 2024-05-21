@@ -14,12 +14,10 @@ from shutil import copy
 from typing import Dict, List
 
 import llnl.util.tty as tty
-from llnl.util.filesystem import is_nonsymlink_exe_with_shebang, path_contains_subdirectory
 from llnl.util.lang import dedupe
 
 from spack.build_environment import dso_suffix, stat_suffix
 from spack.package import *
-from spack.util.environment import is_system_path
 from spack.util.prefix import Prefix
 
 
@@ -32,7 +30,7 @@ class Python(Package):
     list_depth = 1
     tags = ["windows", "build-tools"]
 
-    maintainers("adamjstewart", "skosukhin", "scheibelp")
+    maintainers("skosukhin", "scheibelp")
 
     phases = ["configure", "build", "install"]
 
@@ -42,12 +40,14 @@ class Python(Package):
 
     license("0BSD")
 
+    version("3.12.1", sha256="d01ec6a33bc10009b09c17da95cc2759af5a580a7316b3a446eb4190e13f97b2")
     version("3.12.0", sha256="51412956d24a1ef7c97f1cb5f70e185c13e3de1f50d131c0aac6338080687afb")
     version(
-        "3.11.6",
-        sha256="c049bf317e877cbf9fce8c3af902436774ecef5249a29d10984ca3a37f7f4736",
+        "3.11.7",
+        sha256="068c05f82262e57641bd93458dfa883128858f5f4997aad7a36fd25b13b29209",
         preferred=True,
     )
+    version("3.11.6", sha256="c049bf317e877cbf9fce8c3af902436774ecef5249a29d10984ca3a37f7f4736")
     version("3.11.5", sha256="a12a0a013a30b846c786c010f2c19dd36b7298d888f7c4bd1581d90ce18b5e58")
     version("3.11.4", sha256="85c37a265e5c9dd9f75b35f954e31fbfc10383162417285e30ad25cc073a0d63")
     version("3.11.3", sha256="1a79f3df32265d9e6625f1a0b31c28eb1594df911403d11f3320ee1da1b3e048")
@@ -542,7 +542,8 @@ class Python(Package):
                 copy(lib, prefix)
             else:
                 copy(lib, prefix.DLLs)
-        static_libraries = glob.glob("%s\\*.lib")
+        static_libraries = glob.glob("%s\\*.lib" % build_root)
+        os.makedirs(prefix.libs, exist_ok=True)
         for lib in static_libraries:
             copy(lib, prefix.libs)
 
@@ -1118,7 +1119,7 @@ print(json.dumps(config))
         path = self.config_vars["platlib"]
         if path.startswith(prefix):
             return path.replace(prefix, "")
-        return os.path.join("lib64", "python{}".format(self.version.up_to(2)), "site-packages")
+        return os.path.join("lib64", f"python{self.version.up_to(2)}", "site-packages")
 
     @property
     def purelib(self):
@@ -1138,7 +1139,7 @@ print(json.dumps(config))
         path = self.config_vars["purelib"]
         if path.startswith(prefix):
             return path.replace(prefix, "")
-        return os.path.join("lib", "python{}".format(self.version.up_to(2)), "site-packages")
+        return os.path.join("lib", f"python{self.version.up_to(2)}", "site-packages")
 
     @property
     def include(self):
@@ -1166,34 +1167,6 @@ print(json.dumps(config))
         """Set PYTHONPATH to include the site-packages directory for the
         extension and any other python extensions it depends on.
         """
-
-        # Ensure the current Python is first in the PATH
-        path = os.path.dirname(self.command.path)
-        if not is_system_path(path):
-            env.prepend_path("PATH", path)
-
-        # Add installation prefix to PYTHONPATH, needed to run import tests
-        prefixes = set()
-        if dependent_spec.package.extends(self.spec):
-            prefixes.add(dependent_spec.prefix)
-
-        # Add direct build/run/test dependencies to PYTHONPATH,
-        # needed to build the package and to run import tests
-        for direct_dep in dependent_spec.dependencies(deptype=("build", "run", "test")):
-            if direct_dep.package.extends(self.spec):
-                prefixes.add(direct_dep.prefix)
-
-                # Add recursive run dependencies of all direct dependencies,
-                # needed by direct dependencies at run-time
-                for indirect_dep in direct_dep.traverse(deptype="run"):
-                    if indirect_dep.package.extends(self.spec):
-                        prefixes.add(indirect_dep.prefix)
-
-        for prefix in prefixes:
-            # Packages may be installed in platform-specific or platform-independent
-            # site-packages directories
-            for directory in {self.platlib, self.purelib}:
-                env.prepend_path("PYTHONPATH", os.path.join(prefix, directory))
 
         # We need to make sure that the extensions are compiled and linked with
         # the Spack wrapper. Paths to the executables that are used for these
@@ -1240,9 +1213,7 @@ print(json.dumps(config))
                 # invoked directly (no change would be required in that case
                 # because Spack arranges for the Spack ld wrapper to be the
                 # first instance of "ld" in PATH).
-                new_link = config_link.replace(
-                    " {0} ".format(config_compile), " {0} ".format(new_compile)
-                )
+                new_link = config_link.replace(f" {config_compile} ", f" {new_compile} ")
 
             # There is logic in the sysconfig module that is sensitive to the
             # fact that LDSHARED is set in the environment, therefore we export
@@ -1255,58 +1226,22 @@ print(json.dumps(config))
         """Set PYTHONPATH to include the site-packages directory for the
         extension and any other python extensions it depends on.
         """
-        if dependent_spec.package.extends(self.spec):
-            # Packages may be installed in platform-specific or platform-independent
-            # site-packages directories
-            for directory in {self.platlib, self.purelib}:
-                env.prepend_path("PYTHONPATH", os.path.join(dependent_spec.prefix, directory))
+        if not dependent_spec.package.extends(self.spec) or dependent_spec.dependencies(
+            "python-venv"
+        ):
+            return
+
+        # Packages may be installed in platform-specific or platform-independent site-packages
+        # directories
+        for directory in {self.platlib, self.purelib}:
+            env.prepend_path("PYTHONPATH", os.path.join(dependent_spec.prefix, directory))
 
     def setup_dependent_package(self, module, dependent_spec):
         """Called before python modules' install() methods."""
-
         module.python = self.command
-
         module.python_include = join_path(dependent_spec.prefix, self.include)
         module.python_platlib = join_path(dependent_spec.prefix, self.platlib)
         module.python_purelib = join_path(dependent_spec.prefix, self.purelib)
-
-    def add_files_to_view(self, view, merge_map, skip_if_exists=True):
-        bin_dir = self.spec.prefix.bin if sys.platform != "win32" else self.spec.prefix
-        for src, dst in merge_map.items():
-            if not path_contains_subdirectory(src, bin_dir):
-                view.link(src, dst, spec=self.spec)
-            elif not os.path.islink(src):
-                copy(src, dst)
-                if is_nonsymlink_exe_with_shebang(src):
-                    filter_file(
-                        self.spec.prefix,
-                        os.path.abspath(view.get_projection_for_spec(self.spec)),
-                        dst,
-                        backup=False,
-                    )
-            else:
-                # orig_link_target = os.path.realpath(src) is insufficient when
-                # the spack install tree is located at a symlink or a
-                # descendent of a symlink. What we need here is the real
-                # relative path from the python prefix to src
-                # TODO: generalize this logic in the link_tree object
-                #    add a method to resolve a link relative to the link_tree
-                #    object root.
-                realpath_src = os.path.realpath(src)
-                realpath_prefix = os.path.realpath(self.spec.prefix)
-                realpath_rel = os.path.relpath(realpath_src, realpath_prefix)
-                orig_link_target = os.path.join(self.spec.prefix, realpath_rel)
-
-                new_link_target = os.path.abspath(merge_map[orig_link_target])
-                view.link(new_link_target, dst, spec=self.spec)
-
-    def remove_files_from_view(self, view, merge_map):
-        bin_dir = self.spec.prefix.bin if sys.platform != "win32" else self.spec.prefix
-        for src, dst in merge_map.items():
-            if not path_contains_subdirectory(src, bin_dir):
-                view.remove_file(src, dst)
-            else:
-                os.remove(dst)
 
     def test_hello_world(self):
         """run simple hello world program"""
