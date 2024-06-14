@@ -243,9 +243,11 @@ case "$command" in
         # Edge case for Intel's oneAPI compilers when using the legacy classic compilers:
         # Pass flags to disable deprecation warnings to vcheck mode, since the warnings
         # to stderr confuse tools that parse the output of compiler version checks.
-        if [[ ${SPACK_CFLAGS} == *"-diag-disable=10441"* ]]; then
-            vcheck_flags="-diag-disable=10441"
-        fi
+        case ${SPACK_CXXFLAGS} in
+            *"-diag-disable=10441"* )
+                 vcheck_flags="-diag-disable=10441"
+                 ;;
+        esac
         command="$SPACK_CC"
         language="C"
         comp="CC"
@@ -256,9 +258,11 @@ case "$command" in
         # Edge case for Intel's oneAPI compilers when using the legacy classic compilers:
         # Pass flags to disable deprecation warnings to vcheck mode, since the warnings
         # to stderr confuse tools that parse the output of compiler version checks.
-        if [[ ${SPACK_CXXFLAGS} == *"-diag-disable=10441"* ]]; then
-            vcheck_flags="-diag-disable=10441"
-        fi
+        case ${SPACK_CXXFLAGS} in
+            *"-diag-disable=10441"* )
+                 vcheck_flags="-diag-disable=10441"
+                 ;;
+        esac
         command="$SPACK_CXX"
         language="C++"
         comp="CXX"
@@ -269,9 +273,11 @@ case "$command" in
         # Edge case for Intel's oneAPI compilers when using the legacy classic compilers:
         # Pass flags to disable deprecation warnings to vcheck mode, since the warnings
         # to stderr confuse tools that parse the output of compiler version checks.
-        if [[ ${SPACK_FFLAGS} == *"-diag-disable=10448"* ]]; then
-            vcheck_flags="-diag-disable=10448"
-        fi
+        case ${SPACK_CXXFLAGS} in
+            *"-diag-disable=10441"* )
+                 vcheck_flags="-diag-disable=10441"
+                 ;;
+        esac
         command="$SPACK_FC"
         language="Fortran 90"
         comp="FC"
